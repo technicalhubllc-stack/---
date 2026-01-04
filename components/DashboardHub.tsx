@@ -6,6 +6,7 @@ import { storageService } from '../services/storageService';
 import { LevelView } from './LevelView';
 import { KPIsCenter } from './KPIsCenter';
 import { TemplateLibrary } from './TemplateLibrary';
+import { PartnerMatchingWorkflow } from './PartnerMatchingWorkflow';
 
 interface DashboardHubProps {
   user: UserProfile & { uid: string; role: UserRole; startupId?: string };
@@ -14,26 +15,8 @@ interface DashboardHubProps {
   onNavigateToStage: (stage: any) => void;
 }
 
-interface NavItemProps {
-  id: string;
-  label: string;
-  icon: string;
-  isActive: boolean;
-  onClick: (id: any) => void;
-}
-
-const NavItem: React.FC<NavItemProps> = ({ id, label, icon, isActive, onClick }) => (
-  <button
-    onClick={() => onClick(id)}
-    className={`w-full flex items-center gap-4 px-6 py-3 transition-all border-r-4 ${isActive ? 'bg-slate-50 text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-900'}`}
-  >
-    <span className="text-xl">{icon}</span>
-    <span className="text-[11px] font-bold uppercase tracking-widest">{label}</span>
-  </button>
-);
-
 export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) => {
-  const [activeTab, setActiveTab] = useState<'roadmap' | 'tasks' | 'metrics' | 'templates'>('roadmap');
+  const [activeTab, setActiveTab] = useState<'roadmap' | 'tasks' | 'metrics' | 'templates' | 'partners'>('roadmap');
   const [roadmap, setRoadmap] = useState<LevelData[]>([]);
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<LevelData | null>(null);
@@ -50,91 +33,147 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) =>
     return <LevelView level={selectedLevel} user={user} tasks={tasks} onBack={() => setSelectedLevel(null)} onComplete={() => { storageService.completeLevel(user.uid, selectedLevel.id); loadAllData(); setSelectedLevel(null); playCelebrationSound(); }} />;
   }
 
+  const NAV_ITEMS = [
+    { id: 'roadmap', label: 'مسار النضج', icon: '🧠' },
+    { id: 'tasks', label: 'المخرجات الرقمية', icon: '📥' },
+    { id: 'partners', label: 'البحث عن شركاء', icon: '🤝' },
+    { id: 'templates', label: 'مختبر النماذج', icon: '🔬' },
+    { id: 'metrics', label: 'رادار الأداء', icon: '📡' },
+  ];
+
   return (
-    <div className="min-h-screen bg-white flex overflow-hidden border-t border-slate-100" dir="rtl">
-      
-      {/* Corporate Sidebar */}
-      <aside className="w-72 border-l border-slate-100 flex flex-col sticky top-0 h-screen bg-white z-50">
-        <div className="p-10 border-b border-slate-50">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-8 h-8 bg-slate-900 flex items-center justify-center text-white text-[10px] font-bold">BD</div>
+    <div className="min-h-screen bg-deep-navy flex overflow-hidden text-white font-sans" dir="rtl">
+      {/* Cinematic Grid Overlay */}
+      <div className="fixed inset-0 cinematic-grid opacity-30 pointer-events-none"></div>
+
+      {/* Modern Sidebar */}
+      <aside className="w-80 border-l border-white/5 flex flex-col sticky top-0 h-screen bg-deep-navy/50 backdrop-blur-3xl z-50">
+        <div className="p-12">
+          <div className="flex items-center gap-4 mb-12">
+            <div className="w-12 h-12 bg-electric-blue rounded-2xl flex items-center justify-center text-white text-sm font-black shadow-3xl transform rotate-3">BD</div>
             <div>
-              <span className="text-xs font-black text-slate-900 uppercase block leading-none">بيزنس ديفلوبرز</span>
-              <span className="text-[8px] font-bold text-slate-400 mt-1 block uppercase tracking-widest">Portal</span>
+              <span className="text-xl font-black text-white tracking-tight block leading-none">بيزنس ديفلوبرز</span>
+              <span className="text-[9px] font-bold text-electric-blue mt-2 block uppercase tracking-[0.3em]">Command Center</span>
             </div>
           </div>
-          <div className="space-y-1">
-             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">المؤسس</p>
-             <p className="text-sm font-black text-slate-900 truncate">{user.name}</p>
+          <div className="space-y-2 p-5 bg-white/5 rounded-3xl border border-white/5">
+             <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">المؤسس التنفيذي</p>
+             <p className="text-lg font-black text-white truncate">{user.name}</p>
+             <div className="flex items-center gap-2 pt-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-saudi-green animate-pulse"></span>
+                <span className="text-[9px] font-black text-saudi-green uppercase">حساب نشط</span>
+             </div>
           </div>
         </div>
 
-        <nav className="flex-1 py-8 space-y-1">
-          <NavItem id="roadmap" label="مسار النضج" icon="🧠" isActive={activeTab === 'roadmap'} onClick={setActiveTab} />
-          <NavItem id="tasks" label="المخرجات" icon="📥" isActive={activeTab === 'tasks'} onClick={setActiveTab} />
-          <NavItem id="templates" label="مختبر القوالب" icon="🔬" isActive={activeTab === 'templates'} onClick={setActiveTab} />
-          <NavItem id="metrics" label="رادار الأداء" icon="📡" isActive={activeTab === 'metrics'} onClick={setActiveTab} />
+        <nav className="flex-1 py-8 space-y-3 px-6">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              onClick={() => { setActiveTab(item.id as any); playPositiveSound(); }}
+              className={`w-full flex items-center gap-5 px-6 py-4 rounded-2xl transition-all duration-500 group ${
+                activeTab === item.id 
+                ? 'bg-white/5 border border-white/10 text-white shadow-2xl' 
+                : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.02]'
+              }`}
+            >
+              <span className={`text-2xl transition-transform duration-500 ${activeTab === item.id ? 'scale-110' : 'group-hover:scale-125'}`}>{item.icon}</span>
+              <span className="text-xs font-black uppercase tracking-widest">{item.label}</span>
+              {activeTab === item.id && <div className="mr-auto w-1.5 h-1.5 rounded-full bg-electric-blue shadow-[0_0_10px_rgba(37,99,235,1)]"></div>}
+            </button>
+          ))}
         </nav>
 
-        <div className="p-6 border-t border-slate-50">
-           <button onClick={onLogout} className="w-full flex items-center gap-4 px-6 py-3 text-slate-400 hover:text-rose-600 transition-colors">
-              <span className="text-xl">🚪</span>
-              <span className="text-[10px] font-black uppercase tracking-widest">خروج</span>
+        <div className="p-8 border-t border-white/5">
+           <button onClick={onLogout} className="w-full flex items-center gap-5 px-6 py-4 text-slate-500 hover:text-rose-500 transition-all rounded-2xl group">
+              <span className="text-xl group-hover:rotate-12 transition-transform">🚪</span>
+              <span className="text-xs font-black uppercase tracking-widest">خروج آمن</span>
            </button>
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="px-12 py-10 border-b border-slate-50 flex justify-between items-center shrink-0">
-           <div>
-              <h2 className="text-2xl font-extrabold text-slate-900">{activeTab === 'roadmap' ? 'خارطة طريق النمو' : 'مركز العمليات'}</h2>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">مشروع: {user.startupName}</p>
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        <header className="px-16 py-12 border-b border-white/5 flex justify-between items-end shrink-0 bg-deep-navy/30 backdrop-blur-xl">
+           <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                 <span className="bg-electric-blue/10 text-electric-blue text-[10px] font-black px-3 py-1 rounded-full border border-electric-blue/20 uppercase tracking-widest">Phase: Strategic Maturity</span>
+              </div>
+              <h2 className="text-5xl font-black tracking-tighter text-white">
+                {activeTab === 'roadmap' ? 'خارطة طريق النمو' : 
+                 activeTab === 'templates' ? 'مختبر المخرجات' : 
+                 activeTab === 'metrics' ? 'رادار الجاهزية' : 
+                 activeTab === 'partners' ? 'شبكة الشركاء المؤسسين' : 'المستندات الرسمية'}
+              </h2>
+              <p className="text-lg text-slate-500 font-medium tracking-tight">
+                {activeTab === 'partners' ? 'ابحث عن الكفاءات التي تكمل مهاراتك القيادية والتقنية.' : 'مشروعك حالياً في مرحلة التحقق والنمذجة.'}
+              </p>
            </div>
-           <div className="flex gap-4">
-              <button className="text-[9px] font-bold text-slate-400 uppercase tracking-widest border border-slate-200 px-4 py-2 hover:bg-slate-50 transition-colors">تحديث الحالة</button>
+           <div className="flex items-center gap-6 pb-2">
+              <div className="text-left">
+                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Project Health</p>
+                 <div className="flex items-center gap-2 mt-1">
+                    <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                       <div className="h-full bg-electric-blue shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-all duration-1000" style={{ width: '65%' }}></div>
+                    </div>
+                    <span className="text-xs font-black">65%</span>
+                 </div>
+              </div>
            </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-12 bg-slate-50/30">
-          <div className="max-w-6xl mx-auto">
+        <div className="flex-1 overflow-y-auto p-16 custom-scrollbar">
+          <div className="max-w-7xl mx-auto">
             {activeTab === 'roadmap' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-up">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-up">
                 {roadmap.map((level) => (
                   <div 
                     key={level.id}
                     onClick={() => !level.isLocked && setSelectedLevel(level)}
-                    className={`corporate-card p-10 flex flex-col justify-between min-h-[350px] relative overflow-hidden transition-all
-                      ${level.isLocked ? 'opacity-40 grayscale cursor-not-allowed bg-slate-50/50' : 'cursor-pointer hover:border-slate-300'}
+                    className={`glass-card p-12 flex flex-col justify-between min-h-[400px] relative overflow-hidden transition-all duration-700 group
+                      ${level.isLocked ? 'opacity-30 grayscale cursor-not-allowed border-transparent' : 'cursor-pointer hover:border-electric-blue/50 hover:bg-white/[0.05]'}
                     `}
                   >
-                    <div>
-                      <div className="flex justify-between items-start mb-8">
-                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Level 0{level.id}</span>
-                        {level.isCompleted && <span className="text-emerald-500 font-black text-[9px] uppercase tracking-widest">Verified ✓</span>}
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-electric-blue/5 rounded-bl-[5rem] group-hover:scale-125 transition-transform duration-700"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-10">
+                        <span className="text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] group-hover:text-electric-blue transition-colors">Phase 0{level.id}</span>
+                        {level.isCompleted && <span className="bg-saudi-green/10 text-saudi-green px-4 py-1.5 rounded-full text-[10px] font-black uppercase border border-saudi-green/20">Verified Protocol</span>}
                       </div>
-                      <h3 className="text-xl font-extrabold text-slate-900">{level.title}</h3>
-                      <p className="text-sm text-slate-500 font-medium mt-4 leading-relaxed line-clamp-3">{level.description}</p>
+                      <h3 className="text-3xl font-black mb-6 tracking-tight group-hover:translate-x-[-8px] transition-transform duration-500">{level.title}</h3>
+                      <p className="text-slate-500 text-lg font-medium leading-relaxed mb-8 max-w-sm">{level.description}</p>
                     </div>
 
-                    <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                    <div className="pt-10 border-t border-white/5 flex items-center justify-between relative z-10">
                        <div className="flex flex-col">
-                          <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
-                          <span className="text-[10px] font-black text-slate-900 uppercase">{level.isLocked ? 'Locked' : (level.isCompleted ? 'Completed' : 'Active')}</span>
+                          <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Protocol Status</span>
+                          <span className={`text-[11px] font-black uppercase mt-1 ${level.isCompleted ? 'text-saudi-green' : 'text-slate-400'}`}>
+                             {level.isLocked ? 'Encrypted' : (level.isCompleted ? 'Completed' : 'Awaiting Execution')}
+                          </span>
                        </div>
-                       <button className={`btn-primary !text-[10px] uppercase tracking-widest ${level.isCompleted ? '!bg-slate-900' : ''}`}>
-                          {level.isCompleted ? 'مراجعة المخرج' : 'دخول'}
-                       </button>
+                       {!level.isLocked && (
+                         <button className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                           level.isCompleted 
+                           ? 'bg-white/10 text-white hover:bg-white/20' 
+                           : 'bg-electric-blue text-white shadow-3xl shadow-electric-blue/20 btn-glow'
+                         }`}>
+                           {level.isCompleted ? 'مراجعة البروتوكول' : 'دخول التنفيذ'}
+                         </button>
+                       )}
                     </div>
                   </div>
                 ))}
               </div>
             )}
             
-            {activeTab === 'templates' && <TemplateLibrary userRole={user.role} isDark={false} />}
+            {activeTab === 'templates' && <TemplateLibrary userRole={user.role} isDark={true} />}
             {activeTab === 'metrics' && <KPIsCenter startup={{ metrics: { readiness: 50 }, partners: [] } as any} />}
+            {activeTab === 'partners' && <PartnerMatchingWorkflow user={user} isDark={true} />}
             {activeTab === 'tasks' && (
-              <div className="p-20 text-center border border-dashed border-slate-200 rounded text-slate-400 font-bold italic">
-                 مركز المخرجات والوثائق الرسمية.
+              <div className="py-40 text-center animate-fade-in">
+                 <div className="text-9xl mb-12 opacity-10 grayscale group-hover:grayscale-0 transition-all">📂</div>
+                 <h3 className="text-4xl font-black tracking-tight mb-4">أرشيف المخرجات الاستراتيجية</h3>
+                 <p className="text-slate-500 text-xl font-medium max-w-md mx-auto">سيتم عرض كافة ملفات الـ Pitch Decks وخطط العمل التي اعتمدها الـ AI هنا قريباً.</p>
               </div>
             )}
           </div>
