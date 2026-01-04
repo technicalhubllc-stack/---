@@ -27,8 +27,6 @@ const KEYS = {
 };
 
 export const storageService = {
-  // --- الأساسيات (C.R.U.D) ---
-  
   registerUser: (profile: UserProfile): { user: UserRecord; startup?: StartupRecord } => {
     const users = storageService.getAllUsers();
     const startups = storageService.getAllStartups();
@@ -75,7 +73,7 @@ export const storageService = {
         levelId: level.id,
         title: `مخرج المرحلة: ${level.title}`,
         description: level.description,
-        status: level.id === 1 ? 'ASSIGNED' : 'LOCKED'
+        status: level.isLocked ? 'LOCKED' : 'ASSIGNED'
       }));
       
       const allTasks = storageService.getAllTasks();
@@ -119,6 +117,22 @@ export const storageService = {
     return storageService.getAllTasks().filter(t => t.uid === uid);
   },
 
+  createCustomTask: (uid: string, projectId: string, title: string, description: string): TaskRecord => {
+    const tasks = storageService.getAllTasks();
+    const newTask: TaskRecord = {
+      id: `custom_${Date.now()}_${uid}`,
+      uid,
+      projectId,
+      levelId: 0, // 0 implies custom/non-roadmap task
+      title,
+      description,
+      status: 'ASSIGNED'
+    };
+    const updatedTasks = [...tasks, newTask];
+    localStorage.setItem(KEYS.TASKS, JSON.stringify(updatedTasks));
+    return newTask;
+  },
+
   submitTask: (uid: string, taskId: string, submission: { fileData: string; fileName: string }, aiReview?: any) => {
     const tasks = storageService.getAllTasks();
     const updated = tasks.map(t => {
@@ -140,7 +154,42 @@ export const storageService = {
     return data ? JSON.parse(data) : INITIAL_ROADMAP;
   },
 
-  // --- نظام تذاكر الدعم (Support Hub) ---
+  completeLevel: (uid: string, levelId: number) => {
+    const currentRoadmap = storageService.getCurrentRoadmap(uid);
+    const updatedRoadmap = currentRoadmap.map(lvl => {
+      if (lvl.id === levelId) return { ...lvl, isCompleted: true };
+      if (lvl.id === levelId + 1) return { ...lvl, isLocked: false };
+      return lvl;
+    });
+    localStorage.setItem(`${KEYS.ROADMAP_PREFIX}${uid}`, JSON.stringify(updatedRoadmap));
+
+    const allTasks = storageService.getAllTasks();
+    const updatedTasks = allTasks.map(t => {
+      if (t.uid === uid) {
+        if (t.levelId === levelId) return { ...t, status: 'APPROVED' as const };
+        if (t.levelId === levelId + 1) return { ...t, status: 'ASSIGNED' as const };
+      }
+      return t;
+    });
+    localStorage.setItem(KEYS.TASKS, JSON.stringify(updatedTasks));
+
+    const session = storageService.getCurrentSession();
+    if (session?.projectId) {
+      const startups = storageService.getAllStartups();
+      const updatedStartups = startups.map(s => {
+        if (s.projectId === session.projectId) {
+          const newReadiness = Math.min(100, s.metrics.readiness + 15);
+          return {
+            ...s,
+            metrics: { ...s.metrics, readiness: newReadiness },
+            lastActivity: new Date().toISOString()
+          };
+        }
+        return s;
+      });
+      localStorage.setItem(KEYS.STARTUPS, JSON.stringify(updatedStartups));
+    }
+  },
 
   createSupportTicket: (uid: string, projectId: string, type: TicketType, subject: string, message: string): SupportTicket => {
     const tickets = storageService.getAllTickets();
@@ -159,28 +208,14 @@ export const storageService = {
   },
 
   getAllTickets: (): SupportTicket[] => JSON.parse(localStorage.getItem(KEYS.TICKETS) || '[]'),
-
-  getUserTickets: (uid: string): SupportTicket[] => {
-    return storageService.getAllTickets().filter(t => t.uid === uid);
-  },
-
-  getUserServiceRequests: (uid: string): ServiceRequest[] => {
-    return JSON.parse(localStorage.getItem(KEYS.SERVICES) || '[]').filter((r: any) => r.uid === uid);
-  },
-
-  setSession: (uid: string, projectId?: string) => {
-    localStorage.setItem(KEYS.SESSION, JSON.stringify({ uid, projectId }));
-  },
-
+  getUserTickets: (uid: string): SupportTicket[] => storageService.getAllTickets().filter(t => t.uid === uid),
+  getUserServiceRequests: (uid: string): ServiceRequest[] => JSON.parse(localStorage.getItem(KEYS.SERVICES) || '[]').filter((r: any) => r.uid === uid),
+  setSession: (uid: string, projectId?: string) => localStorage.setItem(KEYS.SESSION, JSON.stringify({ uid, projectId })),
   getCurrentSession: () => {
     const session = localStorage.getItem(KEYS.SESSION);
     return session ? JSON.parse(session) : null;
   },
-
-  logout: () => {
-    localStorage.removeItem(KEYS.SESSION);
-  },
-
+  logout: () => localStorage.removeItem(KEYS.SESSION),
   requestService: (uid: string, serviceId: string, packageId: string, details: string) => {
     const requests = JSON.parse(localStorage.getItem(KEYS.SERVICES) || '[]');
     const newRequest: ServiceRequest = {
@@ -195,7 +230,6 @@ export const storageService = {
     };
     localStorage.setItem(KEYS.SERVICES, JSON.stringify([...requests, newRequest]));
   },
-
   seedDemoAccounts: () => {
     const users = storageService.getAllUsers();
     if (users.length > 0) return;
@@ -213,22 +247,14 @@ export const storageService = {
       firstName: 'المدير', lastName: 'العام', email: 'admin@demo.com', phone: '0503333333', role: 'ADMIN'
     });
   },
-
   getAllPartners: (): PartnerProfile[] => JSON.parse(localStorage.getItem(KEYS.PARTNERS) || '[]'),
-
   registerAsPartner: (profile: PartnerProfile) => {
     const partners = storageService.getAllPartners();
     const index = partners.findIndex(p => p.uid === profile.uid);
-    if (index >= 0) {
-      partners[index] = profile;
-    } else {
-      partners.push(profile);
-    }
+    if (index >= 0) partners[index] = profile;
+    else partners.push(profile);
     localStorage.setItem(KEYS.PARTNERS, JSON.stringify(partners));
   },
-
-  // --- نظام طلبات الشراكة (Partnership Requests) ---
-  
   sendPartnershipRequest: (startupId: string, startupName: string, partnerUid: string, message: string) => {
     const requests: PartnershipRequest[] = JSON.parse(localStorage.getItem(KEYS.PARTNERSHIP_REQUESTS) || '[]');
     const newRequest: PartnershipRequest = {
@@ -242,12 +268,10 @@ export const storageService = {
     };
     localStorage.setItem(KEYS.PARTNERSHIP_REQUESTS, JSON.stringify([...requests, newRequest]));
   },
-
   getPartnerRequests: (partnerUid: string): PartnershipRequest[] => {
     const requests: PartnershipRequest[] = JSON.parse(localStorage.getItem(KEYS.PARTNERSHIP_REQUESTS) || '[]');
     return requests.filter(r => r.partnerUid === partnerUid);
   },
-
   updatePartnershipStatus: (requestId: string, status: 'ACCEPTED' | 'REJECTED') => {
     const requests: PartnershipRequest[] = JSON.parse(localStorage.getItem(KEYS.PARTNERSHIP_REQUESTS) || '[]');
     const updated = requests.map(r => r.id === requestId ? { ...r, status } : r);

@@ -4,7 +4,7 @@ export type Language = 'ar' | 'en' | 'fr' | 'zh';
 export const translations = {
   ar: {
     dir: 'rtl',
-    font: 'IBM Plex Sans Arabic',
+    font: 'Poppins, IBM Plex Sans Arabic',
     brand: 'بيزنس ديفلوبرز',
     subtitle: 'مسرعة أعمال افتراضية مدعومة بالذكاء الاصطناعي',
     common: {
@@ -65,7 +65,7 @@ export const translations = {
   },
   en: {
     dir: 'ltr',
-    font: 'sans-serif',
+    font: 'Poppins, sans-serif',
     brand: 'BizDev AI',
     subtitle: 'AI-Powered Virtual Accelerator',
     common: {

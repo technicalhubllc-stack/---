@@ -124,6 +124,12 @@ export interface PartnershipRequest {
   createdAt: string;
 }
 
+export interface LevelPillar {
+  title: string;
+  description: string;
+  icon: string;
+}
+
 export interface LevelData {
   id: number;
   title: string;
@@ -133,15 +139,120 @@ export interface LevelData {
   isLocked: boolean;
   isCompleted: boolean;
   customColor?: string;
+  complexity?: 'Low' | 'Medium' | 'High' | 'Elite';
+  estimatedTime?: string;
+  pillars?: LevelPillar[];
 }
 
 export const INITIAL_ROADMAP: LevelData[] = [
-  { id: 1, title: 'التحقق الاستراتيجي', description: 'التثبت من وجود مشكلة حقيقية في السوق والتحقق من الفرضيات.', icon: '🔍', imageUrl: 'https://images.unsplash.com/photo-1454165833767-13143891bb39?auto=format&fit=crop&q=80&w=600', isLocked: false, isCompleted: false, customColor: 'blue' },
-  { id: 2, title: 'هيكلة نموذج العمل', description: 'تصميم محرك الإيرادات والقيمة المضافة للمشروع.', icon: '📐', imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600', isLocked: true, isCompleted: false, customColor: 'emerald' },
-  { id: 3, title: 'هندسة المنتج (MVP)', description: 'تحديد المزايا الجوهرية وبناء النسخة الأولى القابلة للاختبار.', icon: '📦', imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600', isLocked: true, isCompleted: false, customColor: 'indigo' },
-  { id: 4, title: 'تحليل الجدوى والنمو', description: 'دراسة حجم السوق، المنافسين، وخطط الاستحواذ.', icon: '🎯', imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827?auto=format&fit=crop&q=80&w=600', isLocked: true, isCompleted: false, customColor: 'amber' },
-  { id: 5, title: 'النمذجة المالية', description: 'التوقعات المالية، التقييم، والاحتياج التمويلي.', icon: '💎', imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600', isLocked: true, isCompleted: false, customColor: 'rose' },
-  { id: 6, title: 'جاهزية الاستثمار', description: 'إعداد العرض التقديمي النهائي ومحاكاة لجان التحكيم.', icon: '🏛️', imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600', isLocked: true, isCompleted: false, customColor: 'slate' }
+  { 
+    id: 1, 
+    title: 'التحقق الاستراتيجي', 
+    description: 'التثبت من وجود مشكلة حقيقية في السوق والتحقق من الفرضيات الأساسية.', 
+    icon: '🧭', 
+    imageUrl: 'https://images.unsplash.com/photo-1454165833767-13143891bb39?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'أزرق',
+    complexity: 'Medium',
+    estimatedTime: '١٠ أيام',
+    pillars: [
+      { title: 'تحليل الفجوات', description: 'تحديد نقاط الضعف في الحلول الحالية.', icon: '🔍' },
+      { title: 'هيكلة القيمة', description: 'صياغة العرض القيمي الذي لا يمكن رفضه.', icon: '💎' },
+      { title: 'اكتشاف العميل', description: 'منهجية المقابلات العميقة مع الجمهور.', icon: '👥' },
+      { title: 'المؤشرات الأولية', description: 'تحديد الأرقام التي تهم في هذه المرحلة.', icon: '📈' }
+    ]
+  },
+  { 
+    id: 2, 
+    title: 'هيكلة نموذج العمل', 
+    description: 'تصميم محرك الإيرادات والقيمة المضافة للمشروع وضمان الاستدامة.', 
+    icon: '💎', 
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'أخضر',
+    complexity: 'High',
+    estimatedTime: '١٤ يوم',
+    pillars: [
+      { title: 'مخطط الـ BMC', description: 'رسم الهيكل التشغيلي والمالي للمشروع.', icon: '📐' },
+      { title: 'مصادر الدخل', description: 'تحديد كيف سيجني المشروع المال فعلياً.', icon: '💰' },
+      { title: 'شركاء النجاح', description: 'بناء شبكة الموردين والشركاء الاستراتيجيين.', icon: '🤝' },
+      { title: 'هيكل التكاليف', description: 'تحليل النفقات الثابتة والمتغيرة.', icon: '📉' }
+    ]
+  },
+  { 
+    id: 3, 
+    title: 'هندسة المنتج (MVP)', 
+    description: 'تحديد المزايا الجوهرية وبناء النسخة الأولى القابلة للاختبار الميداني.', 
+    icon: '🛠️', 
+    imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'بنفسجي',
+    complexity: 'Elite',
+    estimatedTime: '٢١ يوم',
+    pillars: [
+      { title: 'ترتيب الأولويات', description: 'اختيار أهم الميزات للإطلاق الأول.', icon: '🎯' },
+      { title: 'تجربة المستخدم', description: 'تصميم رحلة عميل سلسة ومنطقية.', icon: '📱' },
+      { title: 'التطوير الرشيق', description: 'بناء المنتج بأقل تكلفة وأعلى جودة.', icon: '⚡' },
+      { title: 'خطة الاختبار', description: 'إطلاق النسخة لعدد محدود من المستخدمين.', icon: '🧪' }
+    ]
+  },
+  { 
+    id: 4, 
+    title: 'تحليل الجدوى والنمو', 
+    description: 'دراسة حجم السوق، المنافسين، ووضع خطط الاستحواذ والتوسع.', 
+    icon: '📈', 
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'برتقالي',
+    complexity: 'Medium',
+    estimatedTime: '١٠ أيام',
+    pillars: [
+      { title: 'تحليل المنافسين', description: 'كشف نقاط الضعف في الشركات المنافسة.', icon: '🕵️' },
+      { title: 'حجم السوق', description: 'حساب الـ TAM و SAM و SOM بدقة.', icon: '🌍' },
+      { title: 'قنوات الاستحواذ', description: 'تحديد أرخص وأسرع الطرق لجذب العملاء.', icon: '📢' },
+      { title: 'استراتيجية النمو', description: 'خارطة طريق للتوسع الأفقي والعمودي.', icon: '🚀' }
+    ]
+  },
+  { 
+    id: 5, 
+    title: 'النمذجة المالية', 
+    description: 'التوقعات المالية، التقييم، وتحديد الاحتياج التمويلي الدقيق.', 
+    icon: '💰', 
+    imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'ذهبي',
+    complexity: 'High',
+    estimatedTime: '١٢ يوم',
+    pillars: [
+      { title: 'قائمة الدخل', description: 'توقع الأرباح والخسائر لـ ٣ سنوات.', icon: '📊' },
+      { title: 'نقطة التعادل', description: 'متى سيبدأ المشروع في تغطية تكاليفه؟', icon: '⚖️' },
+      { title: 'تحليل الحرق', description: 'إدارة الـ Burn Rate لضمان الاستمرارية.', icon: '🔥' },
+      { title: 'تقييم الشركة', description: 'تقدير قيمة المشروع لجذب المستثمرين.', icon: '🏢' }
+    ]
+  },
+  { 
+    id: 6, 
+    title: 'جاهزية الاستثمار', 
+    description: 'إعداد العرض التقديمي النهائي ومحاكاة لجان التحكيم الاستثمارية.', 
+    icon: '🤝', 
+    imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600', 
+    isLocked: false, 
+    isCompleted: false, 
+    customColor: 'سحابي',
+    complexity: 'High',
+    estimatedTime: '٧ أيام',
+    pillars: [
+      { title: 'العرض التقديمي', description: 'تصميم Pitch Deck يبهر المستثمرين.', icon: '📽️' },
+      { title: 'فن الإلقاء', description: 'تدريبات مكثفة على مهارات الـ Pitching.', icon: '🎤' },
+      { title: 'إدارة المفاوضات', description: 'كيفية التعامل مع الـ Term Sheet.', icon: '📄' },
+      { title: 'خطة التخارج', description: 'تحديد الأهداف طويلة المدى للمشروع.', icon: '🔓' }
+    ]
+  }
 ];
 
 export enum FiltrationStage { 
@@ -200,13 +311,21 @@ export const SECTORS = [
 ];
 
 export const ACADEMY_BADGES: Badge[] = [
-  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '🔍', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
-  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '📐', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' }
+  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '🧭', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
+  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '💎', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' },
+  { id: 'b3', name: 'وسام التميز التقني', levelId: 3, icon: '🛠️', description: 'تم بناء النسخة التجريبية للمنتج', color: 'from-indigo-500 to-purple-500' },
+  { id: 'b4', name: 'وسام النمو السريع', levelId: 4, icon: '📈', description: 'تم التحقق من قابلية التوسع', color: 'from-amber-500 to-orange-500' },
+  { id: 'b5', name: 'وسام الملاءة المالية', levelId: 5, icon: '💰', description: 'تم إتمام النمذجة المالية بنجاح', color: 'from-rose-500 to-pink-500' },
+  { id: 'b6', name: 'وسام النخبة الاستثمارية', levelId: 6, icon: '🤝', description: 'المشروع جاهز كلياً للاستثمار', color: 'from-slate-600 to-slate-800' }
 ];
 
 export const TASKS_CONFIG = [
   { id: 1, title: 'دراسة السوق', description: 'تحليل المنافسين وحجم السوق.' },
-  { id: 2, title: 'نموذج العمل', description: 'تحديد هيكل التكاليف والإيرادات.' }
+  { id: 2, title: 'نموذج العمل', description: 'تحديد هيكل التكاليف والإيرادات.' },
+  { id: 3, title: 'النموذج التقني', description: 'بناء الميزات الجوهرية للمنتج.' },
+  { id: 4, title: 'خطة النمو', description: 'تحديد قنوات الاستحواذ والنمو.' },
+  { id: 5, title: 'التوقعات المالية', description: 'إعداد قوائم التدفقات النقدية.' },
+  { id: 6, title: 'العرض الاستثماري', description: 'تجهيز ملف العرض النهائي.' }
 ];
 
 export interface PartnerProfile {
