@@ -185,6 +185,27 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                   onClick={() => { setActiveTool(tool.id); playPositiveSound(); }}
                   className="text-right p-10 bg-[#0f172a] rounded-[3.5rem] border border-white/5 shadow-2xl hover:border-blue-600 transition-all group relative overflow-hidden flex flex-col justify-between h-full"
                  >
+                    {/* Hover Info Overlay */}
+                    <div className="absolute inset-0 bg-[#020617]/95 backdrop-blur-xl p-10 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-center text-right z-20 translate-y-4 group-hover:translate-y-0 pointer-events-none">
+                      <div className="space-y-6">
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-blue-400 uppercase tracking-[0.3em]">الهدف من الأداة</p>
+                          <p className="text-sm font-bold text-white leading-relaxed">{tool.detailedInfo}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">المخرج المتوقع</p>
+                          <p className="text-[11px] font-medium text-slate-300 leading-relaxed italic">{tool.expectedOutput}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">منطق الـ AI المستخدم</p>
+                          <p className="text-[10px] font-bold text-slate-400 font-mono">{tool.aiLogic}</p>
+                        </div>
+                        <div className="pt-4 text-center">
+                           <span className="bg-blue-600 text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl">انقر للتشغيل الآن</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-bl-[4rem] group-hover:scale-110 transition-transform"></div>
                     <div>
                       <div className="text-5xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform block relative z-10">{tool.icon}</div>

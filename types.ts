@@ -143,8 +143,8 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 1, 
     title: 'التحقق الاستراتيجي', 
-    description: 'تحديد الجدوى من حل المشكلة والتحقق من فرضيات العميل.', 
-    icon: '🎯', 
+    description: 'تحديد الجدوى من حل المشكلة والتحقق من فرضيات العميل عبر رادار السوق.', 
+    icon: '🛰️', 
     imageUrl: 'https://images.unsplash.com/photo-1454165833767-13143891bb39?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
@@ -162,8 +162,8 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 2, 
     title: 'هيكلة نموذج العمل', 
-    description: 'تصميم محرك الإيرادات والقيمة لضمان استدامة الكيان.', 
-    icon: '📐', 
+    description: 'تصميم محرك الإيرادات والقيمة لضمان استدامة الكيان المؤسسي.', 
+    icon: '🏗️', 
     imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
@@ -181,8 +181,8 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 3, 
     title: 'هندسة المنتج (MVP)', 
-    description: 'بناء النسخة الوظيفية الأولى القابلة للاختبار الميداني.', 
-    icon: '⚡', 
+    description: 'بناء النواة التقنية الأولى القابلة للاختبار الميداني السريع.', 
+    icon: '🧪', 
     imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
@@ -200,12 +200,12 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 4, 
     title: 'تحليل الجدوى والنمو', 
-    description: 'دراسة حجم السوق ووضع خطط الاستحواذ والتوسع الإقليمي.', 
-    icon: '🌍', 
+    description: 'دراسة التوسع ووضع خطط الاستحواذ عبر قنوات البث الرقمي.', 
+    icon: '📡', 
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'برتقالي',
+    customColor: 'وردي',
     complexity: 'Medium',
     estimatedTime: '٥ دورات',
     pillars: [
@@ -221,8 +221,8 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 5, 
     title: 'النمذجة المالية', 
-    description: 'التوقعات المالية الدقيقة ونقطة التعادل وجاهزية التدفقات.', 
-    icon: '💹', 
+    description: 'تأمين القيمة المالية الدقيقة وجاهزية التدفقات النقدية الاستراتيجية.', 
+    icon: '💎', 
     imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
@@ -242,8 +242,8 @@ export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 6, 
     title: 'جاهزية الاستثمار', 
-    description: 'إعداد العرض التقديمي النهائي والتحضير للجان الاستثمار VC.', 
-    icon: '🏆', 
+    description: 'صياغة العرض المؤسسي النهائي والتحضير للجان الاستثمار VC.', 
+    icon: '🏛️', 
     imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
@@ -320,12 +320,12 @@ export const SECTORS = [
 ];
 
 export const ACADEMY_BADGES: Badge[] = [
-  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '🎯', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
-  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '📐', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' },
-  { id: 'b3', name: 'وسام التميز التقني', levelId: 3, icon: '⚡', description: 'تم بناء النسخة التجريبية للمنتج', color: 'from-indigo-500 to-purple-500' },
-  { id: 'b4', name: 'وسام النمو السريع', levelId: 4, icon: '🌍', description: 'تم التحقق من قابلية التوسع', color: 'from-amber-500 to-orange-500' },
-  { id: 'b5', name: 'وسام الملاءة المالية', levelId: 5, icon: '💹', description: 'تم إتمام النمذجة المالية بنجاح', color: 'from-rose-500 to-pink-500' },
-  { id: 'b6', name: 'وسام النخبة الاستثمارية', levelId: 6, icon: '🏆', description: 'المشروع جاهز كلياً للاستثمار', color: 'from-slate-600 to-slate-800' }
+  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '🛰️', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
+  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '🏗️', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' },
+  { id: 'b3', name: 'وسام التميز التقني', levelId: 3, icon: '🧪', description: 'تم بناء النسخة التجريبية للمنتج', color: 'from-indigo-500 to-purple-500' },
+  { id: 'b4', name: 'وسام النمو السريع', levelId: 4, icon: '📡', description: 'تم التحقق من قابلية التوسع', color: 'from-amber-500 to-orange-500' },
+  { id: 'b5', name: 'وسام الملاءة المالية', levelId: 5, icon: '💎', description: 'تم إتمام النمذجة المالية بنجاح', color: 'from-rose-500 to-pink-500' },
+  { id: 'b6', name: 'وسام النخبة الاستثمارية', levelId: 6, icon: '🏛️', description: 'المشروع جاهز كلياً للاستثمار', color: 'from-slate-600 to-slate-800' }
 ];
 
 export const TASKS_CONFIG = [
@@ -635,7 +635,7 @@ export const TEMPLATES_LIBRARY: Template[] = [
     id: 't2',
     title: 'مخطط نموذج العمل (BMC)',
     description: 'الهيكل الكامل لكيفية خلق القيمة وتحقيق الإيرادات.',
-    icon: '📐',
+    icon: '🏗️',
     isMandatory: true,
     role: ['STARTUP'],
     toolTipPurpose: 'رسم خريطة طريق لكيفية عمل الشركة وتحويل القيمة إلى أرباح.',

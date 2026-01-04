@@ -7,6 +7,7 @@ import { LevelView } from './LevelView';
 import { KPIsCenter } from './KPIsCenter';
 import { TemplateLibrary } from './TemplateLibrary';
 import { PartnerMatchingWorkflow } from './PartnerMatchingWorkflow';
+import { ProfileManagement } from './ProfileManagement';
 
 interface DashboardHubProps {
   user: UserProfile & { uid: string; role: UserRole; startupId?: string };
@@ -16,7 +17,7 @@ interface DashboardHubProps {
 }
 
 export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) => {
-  const [activeTab, setActiveTab] = useState<'roadmap' | 'tasks' | 'metrics' | 'templates' | 'partners'>('roadmap');
+  const [activeTab, setActiveTab] = useState<'roadmap' | 'tasks' | 'metrics' | 'templates' | 'partners' | 'profile'>('roadmap');
   const [roadmap, setRoadmap] = useState<LevelData[]>([]);
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [selectedLevel, setSelectedLevel] = useState<LevelData | null>(null);
@@ -39,6 +40,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) =>
     { id: 'partners', label: 'البحث عن شركاء', icon: '🤝' },
     { id: 'templates', label: 'مختبر النماذج', icon: '🔬' },
     { id: 'metrics', label: 'رادار الأداء', icon: '📡' },
+    { id: 'profile', label: 'الملف الاستراتيجي', icon: '📈' },
   ];
 
   return (
@@ -102,10 +104,12 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) =>
                 {activeTab === 'roadmap' ? 'خارطة طريق النمو' : 
                  activeTab === 'templates' ? 'مختبر المخرجات' : 
                  activeTab === 'metrics' ? 'رادار الجاهزية' : 
-                 activeTab === 'partners' ? 'شبكة الشركاء المؤسسين' : 'المستندات الرسمية'}
+                 activeTab === 'partners' ? 'شبكة الشركاء المؤسسين' : 
+                 activeTab === 'profile' ? 'الملف الاستراتيجي للمشروع' : 'المستندات الرسمية'}
               </h2>
               <p className="text-lg text-slate-500 font-medium tracking-tight">
-                {activeTab === 'partners' ? 'ابحث عن الكفاءات التي تكمل مهاراتك القيادية والتقنية.' : 'مشروعك حالياً في مرحلة التحقق والنمذجة.'}
+                {activeTab === 'profile' ? 'قم بإدارة بياناتك المؤسسية وهيكل الفريق التأسيسي.' :
+                 activeTab === 'partners' ? 'ابحث عن الكفاءات التي تكمل مهاراتك القيادية والتقنية.' : 'مشروعك حالياً في مرحلة التحقق والنمذجة.'}
               </p>
            </div>
            <div className="flex items-center gap-6 pb-2">
@@ -169,6 +173,7 @@ export const DashboardHub: React.FC<DashboardHubProps> = ({ user, onLogout }) =>
             {activeTab === 'templates' && <TemplateLibrary userRole={user.role} isDark={true} />}
             {activeTab === 'metrics' && <KPIsCenter startup={{ metrics: { readiness: 50 }, partners: [] } as any} />}
             {activeTab === 'partners' && <PartnerMatchingWorkflow user={user} isDark={true} />}
+            {activeTab === 'profile' && <ProfileManagement user={user} isDark={true} />}
             {activeTab === 'tasks' && (
               <div className="py-40 text-center animate-fade-in">
                  <div className="text-9xl mb-12 opacity-10 grayscale group-hover:grayscale-0 transition-all">📂</div>
