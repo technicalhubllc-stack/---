@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LevelData, UserProfile, TaskRecord, ACADEMY_BADGES } from '../types';
 import { playPositiveSound, playCelebrationSound } from '../services/audioService';
@@ -143,15 +142,15 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
               </div>
 
               <div className="space-y-6">
-                 {[
-                   'ما هو التحدي الأكبر الذي يعالجه هذا المستوى لمشروعك؟',
-                   'كيف ستطبق المنهجية التي تعلمتها في واقع التشغيل؟',
-                   'ما هي النتيجة النهائية المتوقعة بعد اجتياز هذه المرحلة؟'
-                 ].map((q, i) => (
+                 {(level.quiz || [
+                   { question: 'ما هو التحدي الأكبر الذي يعالجه هذا المستوى لمشروعك؟', options: ['الخيار الأول: التركيز على تحسين جودة المخرجات.', 'الخيار الثاني: العمل على تقليل المخاطر التشغيلية.', 'الخيار الثالث: المضي قدماً في بناء الشراكات.'], correctIndex: 0 },
+                   { question: 'كيف ستطبق المنهجية التي تعلمتها في واقع التشغيل؟', options: ['الخيار الأول: التركيز على تحسين جودة المخرجات.', 'الخيار الثاني: العمل على تقليل المخاطر التشغيلية.', 'الخيار الثالث: المضي قدماً في بناء الشراكات.'], correctIndex: 1 },
+                   { question: 'ما هي النتيجة النهائية المتوقعة بعد اجتياز هذه المرحلة؟', options: ['الخيار الأول: التركيز على تحسين جودة المخرجات.', 'الخيار الثاني: العمل على تقليل المخاطر التشغيلية.', 'الخيار الثالث: المضي قدماً في بناء الشراكات.'], correctIndex: 2 }
+                 ]).map((q, i) => (
                     <div key={i} className="p-10 bg-slate-50 border border-slate-100 rounded-[2.5rem] space-y-8">
-                       <h4 className="font-black text-xl text-slate-800 leading-relaxed">{i+1}. {q}</h4>
+                       <h4 className="font-black text-xl text-slate-800 leading-relaxed">{i+1}. {q.question}</h4>
                        <div className="grid grid-cols-1 gap-3">
-                          {['الخيار الأول: التركيز على تحسين جودة المخرجات.', 'الخيار الثاني: العمل على تقليل المخاطر التشغيلية.', 'الخيار الثالث: المضي قدماً في بناء الشراكات.'].map((o, oi) => (
+                          {q.options.map((o, oi) => (
                             <button key={oi} onClick={playPositiveSound} className="w-full text-right p-5 bg-white border-2 border-slate-100 rounded-2xl font-bold text-sm hover:border-blue-600 hover:bg-blue-50/30 transition-all active:scale-[0.99]">
                                {o}
                             </button>

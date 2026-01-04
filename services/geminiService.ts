@@ -9,7 +9,7 @@ import {
 const callGemini = async (params: { prompt: string; systemInstruction?: string; json?: boolean; schema?: any }) => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const config: any = {
-    temperature: 0.2, // Lower temperature for more consistent corporate logic
+    temperature: 0.2, 
     topP: 0.95,
   };
 
@@ -40,7 +40,22 @@ const callGemini = async (params: { prompt: string; systemInstruction?: string; 
   return response.text;
 };
 
-// Fix: Exported runPartnerMatchAI for CoFounderPortal.tsx
+// وظيفة الدعم السريع الذكي
+export const getQuickSupportResponseAI = async (message: string) => {
+  return callGemini({
+    prompt: message,
+    systemInstruction: `أنت المساعد الذكي الرسمي لمنصة "بيزنس ديفلوبرز" (مسرعة أعمال افتراضية). 
+    أجب باختصار واحترافية عالية وبأسلوب فخم (Corporate Luxury). 
+    معلوماتك الأساسية:
+    - المنصة تقدم برنامج احتضان مجاني لمدة 8 أسابيع.
+    - نستخدم Gemini 3 Pro لتحليل المشاريع.
+    - نوفر نظام مطابقة ذكي للشركاء المؤسسين.
+    - نساعد المستثمرين الأجانب في الحصول على رخص MISA والإقامة المميزة في السعودية.
+    - نركز على المخرجات العملية (MVP) والجاهزية للاستثمار.
+    إذا سُئلت عن شيء خارج نطاق ريادة الأعمال والمنصة، اعتذر بلباقة ووجّه السائل لاستكشاف خدماتنا.`
+  });
+};
+
 export const runPartnerMatchAI = async (startup: StartupRecord, partners: PartnerProfile[]): Promise<MatchResult[]> => {
   return runSmartMatchingAlgorithmAI(startup, partners);
 };
@@ -86,7 +101,7 @@ export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partne
           name: { type: Type.STRING },
           role: { type: Type.STRING },
           avatar: { type: Type.STRING },
-          partnerUid: { type: Type.STRING }, // Added for CoFounderPortal consistency
+          partnerUid: { type: Type.STRING }, 
           scores: {
             type: Type.OBJECT,
             properties: {
@@ -99,8 +114,8 @@ export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partne
           },
           totalScore: { type: Type.NUMBER },
           reason: { type: Type.STRING },
-          reasoning: { type: Type.ARRAY, items: { type: Type.STRING } }, // Added for CoFounderPortal
-          risk: { type: Type.STRING } // Added for CoFounderPortal
+          reasoning: { type: Type.ARRAY, items: { type: Type.STRING } }, 
+          risk: { type: Type.STRING } 
         },
         required: ["id", "name", "role", "avatar", "scores", "totalScore", "reason"]
       }
@@ -141,7 +156,6 @@ export const discoverOpportunities = async (name: string, desc: string, industry
   });
 };
 
-// Fix: Exported suggestIconsForLevels for Dashboard.tsx
 export const suggestIconsForLevels = async () => {
   return callGemini({
     prompt: "Suggest professional emoji icons and modern color themes for 6 accelerator levels.",
@@ -272,7 +286,6 @@ export const evaluateNominationForm = async (data: any) => {
   });
 };
 
-// Fix: Exported runProjectAgents for ProjectBuilderMain.tsx
 export const runProjectAgents = async (projectName: string, description: string, agents: string[]) => {
   const prompt = `Project: ${projectName}\nDesc: ${description}\nAgents: ${agents.join(', ')}`;
   return callGemini({
@@ -291,7 +304,6 @@ export const runProjectAgents = async (projectName: string, description: string,
   });
 };
 
-// Fix: Exported generatePitchDeck for ProjectBuilderMain.tsx
 export const generatePitchDeck = async (projectName: string, description: string, context: any) => {
   const prompt = `Project: ${projectName}\nDesc: ${description}\nContext: ${JSON.stringify(context)}`;
   return callGemini({
@@ -311,7 +323,6 @@ export const generatePitchDeck = async (projectName: string, description: string
   });
 };
 
-// Fix: Exported analyzeExportOpportunity for ExportDecisionEngine.tsx
 export const analyzeExportOpportunity = async (data: any) => {
   const prompt = `Export Data: ${JSON.stringify(data)}`;
   return callGemini({
@@ -337,7 +348,6 @@ export const analyzeExportOpportunity = async (data: any) => {
   });
 };
 
-// Fix: Exported simulateBrutalTruth for SmartFeatures.tsx
 export const simulateBrutalTruth = async (data: any) => {
   const prompt = `Business Idea for Brutal Truth: ${JSON.stringify(data)}`;
   return callGemini({
@@ -358,7 +368,6 @@ export const simulateBrutalTruth = async (data: any) => {
   });
 };
 
-// Fix: Exported getGovInsights for GovDashboard.tsx
 export const getGovInsights = async () => {
   return callGemini({
     prompt: "Generate macroeconomic insights for government entities monitoring the startup ecosystem.",
@@ -376,7 +385,6 @@ export const getGovInsights = async () => {
   });
 };
 
-// Fix: Exported generateStartupIdea for ToolsPage.tsx
 export const generateStartupIdea = async (form: { sector: string; interest: string }) => {
   const prompt = `Sector: ${form.sector}\nInterests: ${form.interest}`;
   return callGemini({
@@ -385,7 +393,6 @@ export const generateStartupIdea = async (form: { sector: string; interest: stri
   });
 };
 
-// Fix: Exported generateProjectDetails for ToolsPage.tsx
 export const generateProjectDetails = async (form: any) => {
   return callGemini({
     prompt: `Generate detailed project requirements for: ${JSON.stringify(form)}`,
@@ -393,7 +400,6 @@ export const generateProjectDetails = async (form: any) => {
   });
 };
 
-// Fix: Exported generateProductSpecs for ToolsPage.tsx
 export const generateProductSpecs = async (form: { projectName: string; description: string }) => {
   const prompt = `Project: ${form.projectName}\nDesc: ${form.description}`;
   return callGemini({
@@ -402,7 +408,6 @@ export const generateProductSpecs = async (form: { projectName: string; descript
   });
 };
 
-// Fix: Exported generateLeanBusinessPlan for ToolsPage.tsx
 export const generateLeanBusinessPlan = async (form: any) => {
   const prompt = `Lean Plan Data: ${JSON.stringify(form)}`;
   return callGemini({
@@ -411,7 +416,6 @@ export const generateLeanBusinessPlan = async (form: any) => {
   });
 };
 
-// Fix: Exported generatePitchDeckOutline for ToolsPage.tsx
 export const generatePitchDeckOutline = async (form: any) => {
   const prompt = `Pitch Data: ${JSON.stringify(form)}`;
   return callGemini({
@@ -436,7 +440,6 @@ export const generatePitchDeckOutline = async (form: any) => {
   });
 };
 
-// Fix: Exported generateFounderCV for ToolsPage.tsx
 export const generateFounderCV = async (form: any) => {
   const prompt = `Founder Profile: ${JSON.stringify(form)}`;
   return callGemini({

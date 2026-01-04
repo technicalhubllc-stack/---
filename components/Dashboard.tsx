@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { LevelData, UserProfile, DIGITAL_SHIELDS, SECTORS, TaskRecord, SERVICES_CATALOG, ServiceItem, ServicePackage, ServiceRequest, OpportunityAnalysis, ProgramRating, Partner } from '../types';
 import { storageService } from '../services/storageService';
@@ -33,7 +32,7 @@ const PRESET_COLORS = [
 ];
 
 export const Dashboard: React.FC<DashboardProps> = ({ 
-  user: initialUser, levels, onSelectLevel, onShowCertificate, onLogout, 
+  user: initialUser, levels: initialLevels, onSelectLevel, onShowCertificate, onLogout, 
   onOpenProAnalytics, onUpdateLevelUI, onAISuggestIcons,
   lang, onLanguageChange
 }) => {
@@ -41,6 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => (localStorage.getItem('dashboard_theme_mode') as any) || 'light');
   const [isAISuggesting, setIsAISuggesting] = useState(false);
+  const [localLevels, setLocalLevels] = useState<LevelData[]>(initialLevels);
   
   const t = getTranslation(lang);
   
@@ -75,8 +75,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // Profile Specific State
   const [newPartner, setNewPartner] = useState<Partner>({ name: '', role: '' });
 
-  const completedCount = levels.filter(l => l.isCompleted).length;
-  const progress = (completedCount / levels.length) * 100;
+  const completedCount = localLevels.filter(l => l.isCompleted).length;
+  const progress = (completedCount / localLevels.length) * 100;
   const isDark = themeMode === 'dark';
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }));
       }
     }
-  }, [activeNav, levels]);
+  }, [activeNav, localLevels]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -215,12 +215,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const handleAISuggest = async () => {
-    if (!onAISuggestIcons) return;
     setIsAISuggesting(true);
+    playPositiveSound();
     try {
-      await onAISuggestIcons();
-      playCelebrationSound();
-    } catch (e) { alert('Failed.'); } finally { setIsAISuggesting(false); }
+      const suggestions = await suggestIconsForLevels();
+      if (suggestions && suggestions.suggestions) {
+        const updatedLevels = localLevels.map(lvl => {
+          const suggestion = suggestions.suggestions.find((s: any) => s.id === lvl.id);
+          if (suggestion) {
+            return { ...lvl, icon: suggestion.icon, customColor: suggestion.color };
+          }
+          return lvl;
+        });
+        setLocalLevels(updatedLevels);
+        const session = storageService.getCurrentSession();
+        if (session) {
+           localStorage.setItem(`bd_roadmap_${session.uid}`, JSON.stringify(updatedLevels));
+        }
+        playCelebrationSound();
+      }
+    } catch (e) { 
+      console.error("AI Suggestion failed", e);
+      alert('فشل توليد الاقتراحات الذكية.'); 
+    } finally { 
+      setIsAISuggesting(false); 
+    }
   };
 
   const getLevelColorSet = (colorName?: string) => {
@@ -361,11 +380,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="space-y-8">
                    <div className="flex justify-between items-center px-4">
                       <h3 className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>تفاصيل محطات التسريع والمخرجات</h3>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{completedCount} من {levels.length} محطات مكتملة</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{completedCount} من {localLevels.length} محطات مكتملة</span>
                    </div>
                    <div className={`rounded-[3.5rem] card-neo overflow-hidden`}>
                       <div className={`divide-y ${isDark ? 'divide-white/5' : 'divide-slate-100'}`}>
-                        {levels.map((level) => {
+                        {localLevels.map((level) => {
                           const colorSet = getLevelColorSet(level.customColor);
                           const levelTask = getTaskForLevel(level.id);
                           return (
