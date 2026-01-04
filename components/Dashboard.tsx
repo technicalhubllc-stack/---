@@ -67,6 +67,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const [isAnalyzingOpp, setIsAnalyzingOpp] = useState(false);
   const [oppResult, setOppResult] = useState<OpportunityAnalysis | null>(null);
   
+  // Custom Task State
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [customTaskTitle, setCustomTaskTitle] = useState('');
+  const [customTaskDesc, setCustomTaskDesc] = useState('');
+  
   const [showRatingModal, setShowRatingModal] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -144,6 +149,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setSelectedTask(null);
     setSubmissionFile(null);
     playCelebrationSound();
+  };
+
+  const handleAddCustomTask = () => {
+    if (!customTaskTitle.trim()) return;
+    const session = storageService.getCurrentSession();
+    if (session) {
+      const newTask = storageService.createCustomTask(session.uid, session.projectId, customTaskTitle, customTaskDesc);
+      setUserTasks(prev => [...prev, newTask]);
+      setCustomTaskTitle('');
+      setCustomTaskDesc('');
+      setShowAddTaskModal(false);
+      playCelebrationSound();
+    }
   };
 
   const handleSaveProfile = () => {
@@ -250,6 +268,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
     return userTasks.find(t => t.levelId === levelId);
   };
 
+  const getTaskProgress = (status: string) => {
+    switch (status) {
+      case 'APPROVED': return 100;
+      case 'SUBMITTED': return 50;
+      case 'REJECTED': return 0;
+      case 'ASSIGNED': return 10;
+      default: return 0;
+    }
+  };
+
   const getStatusBadge = (task?: TaskRecord) => {
     if (!task) return null;
     switch (task.status) {
@@ -343,6 +371,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </button>
                   <button onClick={onOpenProAnalytics} className="bg-blue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all hover:bg-blue-700">تحليلات PRO</button>
                  </>
+              )}
+              {activeNav === 'tasks' && (
+                <button onClick={() => { setShowAddTaskModal(true); playPositiveSound(); }} className="bg-emerald-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-600/30 active:scale-95 transition-all hover:bg-emerald-700">
+                  إضافة مهمة مخصصة +
+                </button>
               )}
            </div>
         </header>
@@ -445,32 +478,68 @@ export const Dashboard: React.FC<DashboardProps> = ({
            )}
 
            {activeNav === 'tasks' && (
-             <div className="max-w-5xl mx-auto space-y-10 animate-fade-in-up pb-20">
+             <div className="max-w-5xl mx-auto space-y-12 animate-fade-in-up pb-20">
+                <div className="flex justify-between items-end border-b border-slate-100 pb-8">
+                  <div>
+                    <h3 className={`text-4xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>مركز المخرجات والمهام</h3>
+                    <p className="text-slate-500 font-medium mt-1">أدر مهامك الاستراتيجية والتشغيلية في مكان واحد.</p>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                   {userTasks.map(task => (
-                     <div key={task.id} className="p-10 rounded-[3.5rem] card-neo">
-                        <div className="flex justify-between items-center mb-8">
-                           <span className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em]">Milestone 0{task.levelId}</span>
-                           <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase border ${task.status === 'ASSIGNED' ? 'bg-blue-50 text-blue-600 border-blue-100' : task.status === 'SUBMITTED' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}`}>{task.status === 'APPROVED' ? 'مقبول' : task.status}</span>
-                        </div>
-                        <h4 className="text-2xl font-black mb-4 leading-tight">{task.title}</h4>
-                        <p className="text-sm text-slate-500 mb-10 leading-relaxed font-medium">{task.description}</p>
-                        {task.status === 'ASSIGNED' && (
-                           <button onClick={() => setSelectedTask(task)} className="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-sm hover:brightness-110 transition-all shadow-xl shadow-blue-600/20 active:scale-95">تسليم المخرج (PDF)</button>
-                        )}
-                        {task.status === 'SUBMITTED' && (
-                           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">تم الرفع: {task.submission?.fileName}</p>
-                              <p className="text-[10px] text-amber-500 font-bold mt-1">جاري المراجعة الاستراتيجية</p>
-                           </div>
-                        )}
-                        {task.status === 'APPROVED' && (
-                          <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                             <p className="text-[10px] text-emerald-600 font-black uppercase">تم قبول المخرج بنجاح ✓</p>
+                   {userTasks.map(task => {
+                     const taskProgress = getTaskProgress(task.status);
+                     return (
+                       <div key={task.id} className="p-10 rounded-[3.5rem] card-neo relative overflow-hidden flex flex-col justify-between group">
+                          <div className={`absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-[4rem] transition-all group-hover:scale-110 ${task.levelId > 0 ? 'bg-blue-600' : 'bg-emerald-600'}`}></div>
+                          
+                          <div>
+                            <div className="flex justify-between items-center mb-8">
+                               <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${task.levelId > 0 ? 'text-blue-500' : 'text-emerald-500'}`}>
+                                 {task.levelId > 0 ? `Strategic Milestone 0${task.levelId}` : 'Custom Project Task'}
+                               </span>
+                               {getStatusBadge(task)}
+                            </div>
+                            <h4 className="text-2xl font-black mb-4 leading-tight">{task.title}</h4>
+                            <p className="text-sm text-slate-500 mb-8 leading-relaxed font-medium min-h-[60px] line-clamp-3">{task.description}</p>
+                            
+                            {/* Visual Task Progress Indicator */}
+                            <div className="space-y-3 mb-10">
+                               <div className="flex justify-between items-center">
+                                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Task Integrity</span>
+                                  <span className={`text-sm font-black ${taskProgress === 100 ? 'text-emerald-500' : 'text-blue-600'}`}>{taskProgress}%</span>
+                               </div>
+                               <div className="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full transition-all duration-1000 ease-out ${taskProgress === 100 ? 'bg-emerald-500' : 'bg-blue-600'}`} 
+                                    style={{ width: `${taskProgress}%` }}
+                                  ></div>
+                               </div>
+                            </div>
                           </div>
-                        )}
-                     </div>
-                   ))}
+
+                          <div className="pt-6 border-t border-slate-50 dark:border-white/5">
+                            {task.status === 'ASSIGNED' && (
+                               <button onClick={() => setSelectedTask(task)} className={`w-full py-5 text-white rounded-2xl font-black text-sm hover:brightness-110 transition-all shadow-xl active:scale-95 ${task.levelId > 0 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-600/20' : 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-600/20'}`}>
+                                 تسليم المخرج (PDF)
+                               </button>
+                            )}
+                            {task.status === 'SUBMITTED' && (
+                               <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/10 text-center">
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">المرفق: {task.submission?.fileName}</p>
+                                  <p className="text-[10px] text-amber-500 font-bold mt-1">جاري التدقيق الاستراتيجي</p>
+                               </div>
+                            )}
+                            {task.status === 'APPROVED' && (
+                              <div className="p-4 bg-emerald-50 dark:bg-emerald-500/5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20 text-center flex items-center justify-center gap-3">
+                                 <span className="text-xl">✅</span>
+                                 <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black uppercase">تم الاعتماد والمطابقة بنجاح</p>
+                              </div>
+                            )}
+                          </div>
+                       </div>
+                     );
+                   })}
                 </div>
              </div>
            )}
@@ -682,7 +751,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                  </div>
                  <button onClick={() => { setSelectedTask(null); setSubmissionFile(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors">✕</button>
               </div>
-              <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-[2rem] border border-slate-100 dark:border-white/5 mb-8">
+              <div className="bg-slate-50 dark:bg-white/5 p-6 rounded-[2rem] border border-slate-100 dark:border-white/10 mb-8">
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">{selectedTask.description}</p>
               </div>
               
@@ -721,7 +790,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
 
-        {/* selectedService Modal */}
+        {/* Add Custom Task Modal */}
+        {showAddTaskModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fade-in" dir="rtl">
+            <div className={`max-w-xl w-full p-12 rounded-[4rem] ${isDark ? 'bg-slate-900 border border-white/5 text-white' : 'bg-white shadow-2xl text-slate-900'} animate-fade-in-up`}>
+               <h3 className="text-3xl font-black mb-8">إضافة مهمة مخصصة</h3>
+               <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">عنوان المهمة</label>
+                    <input className="input-profile" value={customTaskTitle} onChange={e => setCustomTaskTitle(e.target.value)} placeholder="مثال: مراجعة العقد مع المورد..." />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">الوصف (اختياري)</label>
+                    <textarea className="input-profile h-32 resize-none" value={customTaskDesc} onChange={e => setCustomTaskDesc(e.target.value)} placeholder="تفاصيل إضافية للمهمة..." />
+                  </div>
+               </div>
+               <div className="flex gap-4 mt-10">
+                  <button onClick={() => setShowAddTaskModal(false)} className="flex-1 py-5 font-black text-slate-400 hover:text-slate-600 transition-colors">إلغاء</button>
+                  <button onClick={handleAddCustomTask} className="flex-[2] py-5 bg-emerald-600 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-emerald-500/30 active:scale-95 transition-all hover:bg-emerald-700">حفظ المهمة</button>
+               </div>
+            </div>
+          </div>
+        )}
+
         {selectedService && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fade-in" dir="rtl">
             <div className={`max-w-4xl w-full p-10 md:p-14 rounded-[4rem] ${isDark ? 'bg-slate-900 border border-white/5 text-white' : 'bg-white shadow-2xl text-slate-900'} animate-fade-in-up overflow-y-auto max-h-[90vh]`}>
