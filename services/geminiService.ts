@@ -13,10 +13,10 @@ import {
   ApplicantProfile
 } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 // Standardized callGemini helper
 const callGemini = async (params: { prompt: string; systemInstruction?: string; json?: boolean; schema?: any; model?: string }) => {
+  // Create a new GoogleGenAI instance right before making an API call to ensure it always uses the most up-to-date API key
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const config: any = {
     temperature: 0.7, 
     topP: 0.95,
@@ -37,6 +37,7 @@ const callGemini = async (params: { prompt: string; systemInstruction?: string; 
     config,
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return response.text;
 };
 
@@ -64,6 +65,7 @@ export const generateGTMStrategyAI = async (data: { name: string; industry: stri
 export const generateFinancialForecastAI = async (data: { name: string; revenueModel: string; initialCap: string; burnRate: string }) => {
   const prompt = `Business: ${data.name}\nRevenue Model: ${data.revenueModel}\nInitial Capital: ${data.initialCap}\nMonthly Burn Rate: ${data.burnRate}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -94,6 +96,7 @@ export const generateFinancialForecastAI = async (data: { name: string; revenueM
     }
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
@@ -136,6 +139,7 @@ export const generateStructuredBusinessPlanAI = async (data: {
     3-Year Vision: ${data.vision3yr}
   `;
 
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -158,10 +162,10 @@ export const generateStructuredBusinessPlanAI = async (data: {
     }
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
-// Added missing export for Strategic Plan generation to fix ToolsPage.tsx error
 /**
  * Strategic Plan Generator
  */
@@ -274,6 +278,7 @@ export const getQuickSupportResponseAI = async (message: string) => {
 export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partners: PartnerProfile[]): Promise<any> => {
   const prompt = `Startup: ${startup.name}. Industry: ${startup.industry}. Available Partners: ${JSON.stringify(partners.slice(0, 20))}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
@@ -306,12 +311,14 @@ export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partne
     }
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "[]");
 };
 
 export const discoverOpportunities = async (name: string, desc: string, industry: string): Promise<any> => {
   const prompt = `Startup: ${name}, Industry: ${industry}, Description: ${desc}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -338,10 +345,12 @@ export const discoverOpportunities = async (name: string, desc: string, industry
     }
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const suggestIconsForLevels = async () => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: "Suggest modern icons and brand colors for 6 accelerator levels.",
@@ -365,10 +374,13 @@ export const suggestIconsForLevels = async () => {
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const createPathFinderChat = () => {
+  // Create a new GoogleGenAI instance for chat setup
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   return ai.chats.create({
     model: "gemini-3-flash-preview",
     config: { 
@@ -380,6 +392,7 @@ export const createPathFinderChat = () => {
 export const reviewDeliverableAI = async (title: string, desc: string, context: string) => {
   const prompt = `Deliverable: ${title}\nUser Context: ${context}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -397,12 +410,14 @@ export const reviewDeliverableAI = async (title: string, desc: string, context: 
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const evaluateTemplateAI = async (templateTitle: string, formData: any) => {
   const prompt = `Template: ${templateTitle}\nSubmitted Data: ${JSON.stringify(formData)}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -419,12 +434,14 @@ export const evaluateTemplateAI = async (templateTitle: string, formData: any) =
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const generateAnalyticalQuestions = async (profile: ApplicantProfile): Promise<AnalyticalQuestion[]> => {
   const prompt = `Generate 5 analytical multiple-choice questions in Arabic for a startup in the ${profile.sector} sector at the ${profile.projectStage} stage. The founder's challenge is: ${profile.goal}. Return a JSON array.`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
@@ -446,12 +463,14 @@ export const generateAnalyticalQuestions = async (profile: ApplicantProfile): Pr
     }
   });
 
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "[]");
 };
 
 export const evaluateProjectIdea = async (text: string, profile: any): Promise<ProjectEvaluationResult> => {
   const prompt = `Evaluate Idea: ${text}\nFounder Profile: ${JSON.stringify(profile)}`;
   
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: prompt,
@@ -475,10 +494,12 @@ export const evaluateProjectIdea = async (text: string, profile: any): Promise<P
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const evaluateNominationForm = async (data: any): Promise<any> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `Nomination Form: ${JSON.stringify(data)}`,
@@ -495,10 +516,12 @@ export const evaluateNominationForm = async (data: any): Promise<any> => {
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const runProjectAgents = async (projectName: string, description: string, agents: string[]) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `Simulate Project: ${projectName}. Agents Active: ${agents.join(',')}. Project Description: ${description}`,
@@ -516,10 +539,12 @@ export const runProjectAgents = async (projectName: string, description: string,
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const generatePitchDeck = async (projectName: string, description: string, context: any) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `Project: ${projectName}. Context: ${JSON.stringify(context)}`,
@@ -538,10 +563,12 @@ export const generatePitchDeck = async (projectName: string, description: string
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "[]");
 };
 
 export const analyzeExportOpportunity = async (data: any) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `Export Data: ${JSON.stringify(data)}`,
@@ -566,10 +593,12 @@ export const analyzeExportOpportunity = async (data: any) => {
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const simulateBrutalTruth = async (data: any): Promise<FailureSimulation> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: `Idea: ${JSON.stringify(data)}`,
@@ -589,10 +618,12 @@ export const simulateBrutalTruth = async (data: any): Promise<FailureSimulation>
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };
 
 export const getGovInsights = async (): Promise<GovStats> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: "Analyze national ecosystem trends.",
@@ -637,5 +668,6 @@ export const getGovInsights = async (): Promise<GovStats> => {
       }
     }
   });
+  // Extract text output from GenerateContentResponse via .text property
   return JSON.parse(response.text || "{}");
 };

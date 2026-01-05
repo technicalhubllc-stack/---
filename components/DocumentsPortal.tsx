@@ -14,91 +14,97 @@ export const DocumentsPortal: React.FC<DocumentsPortalProps> = ({ user, progress
 
   const handleDownloadPDF = (docName: string) => {
     playPositiveSound();
-    // Simulate generation and download
     alert(`جاري تجهيز نسخة PDF من ${docName}...`);
     window.print(); 
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 animate-fade-up pb-20">
+    <div className="max-w-5xl mx-auto space-y-12 animate-fade-up pb-20">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* 1. Incubation Contract */}
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-blue-600 transition-all">
-          <div className="space-y-6">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:rotate-6 transition-transform">📄</div>
-            <div>
-              <h3 className="text-2xl font-black text-slate-900">عقد الاحتضان</h3>
-              <p className="text-slate-400 text-sm font-medium mt-2">اتفاقية تقديم خدمات التسريع الرقمية المعتمدة.</p>
+        <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between group hover:border-primary transition-all">
+          <div className="space-y-8">
+            <div className="flex justify-between items-start">
+              <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-500">📄</span>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 uppercase tracking-widest">Active</span>
             </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-               <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                 <span>حالة العقد</span>
-                 <span className="text-emerald-500">موقع رقمياً</span>
-               </div>
-               <p className="text-xs font-bold text-slate-700">تاريخ التوقيع: {new Date().toLocaleDateString('ar-EG')}</p>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 font-heading mb-2">عقد الاحتضان</h3>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed">اتفاقية تقديم خدمات التسريع الرقمية المعتمدة للكيان المؤسسي.</p>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
+               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
+               <p className="text-xs font-bold text-slate-700">موقع رقمياً • {new Date().toLocaleDateString('ar-EG')}</p>
             </div>
           </div>
           <button 
             onClick={() => handleDownloadPDF('عقد الاحتضان')}
-            className="w-full mt-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="btn-secondary w-full mt-10 flex items-center justify-center gap-2 group-hover:bg-slate-50"
           >
-            <span>تحميل العقد PDF</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth={2.5} /></svg>
+            <span>تحميل النسخة PDF</span>
           </button>
         </div>
 
         {/* 2. MISA Support Letter */}
-        <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-emerald-600 transition-all">
-          <div className="space-y-6">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:rotate-6 transition-transform">📜</div>
-            <div>
-              <h3 className="text-2xl font-black text-slate-900">خطاب دعم الاستثمار</h3>
-              <p className="text-slate-400 text-sm font-medium mt-2">موجّه لوزارة الاستثمار (MISA) لتسهيل استخراج التراخيص.</p>
+        <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between group hover:border-primary transition-all">
+          <div className="space-y-8">
+            <div className="flex justify-between items-start">
+              <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-500">🏛️</span>
+              <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 uppercase tracking-widest">MISA Protocol</span>
             </div>
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">الغرض من الخطاب:</p>
-               <p className="text-xs font-bold text-slate-700 leading-relaxed italic">"توصية رسمية بانضمام الشركة لبرنامج بيزنس ديفلوبرز المعتمد لرواد الأعمال."</p>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 font-heading mb-2">خطاب دعم الاستثمار</h3>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed">توصية رسمية موجهة لوزارة الاستثمار لتسهيل الإجراءات التنظيمية.</p>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
+               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Impact Level</p>
+               <p className="text-xs font-bold text-slate-700">اعتماد استراتيجي كامل</p>
             </div>
           </div>
           <button 
             onClick={() => handleDownloadPDF('خطاب دعم الاستثمار')}
-            className="w-full mt-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="btn-secondary w-full mt-10 flex items-center justify-center gap-2 group-hover:bg-slate-50"
           >
-            <span>طلب رخصة الاستثمار</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth={2.5} /></svg>
+            <span>طلب الرخصة</span>
           </button>
         </div>
 
         {/* 3. Program Completion Certificate */}
-        <div className={`p-10 rounded-[3rem] border shadow-sm flex flex-col justify-between group transition-all
-          ${isCompleted ? 'bg-white border-slate-100 hover:border-blue-600' : 'bg-slate-50 border-slate-200 opacity-60 grayscale'}
+        <div className={`p-10 rounded-xl border flex flex-col justify-between group transition-all
+          ${isCompleted ? 'bg-white border-slate-200 shadow-sm hover:border-primary' : 'bg-slate-50 border-transparent opacity-60'}
         `}>
-          <div className="space-y-6">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:rotate-6 transition-transform">🎓</div>
+          <div className="space-y-8">
+            <div className="flex justify-between items-start">
+              <span className="text-3xl grayscale group-hover:grayscale-0 transition-all duration-500">🎓</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-widest ${isCompleted ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-200 text-slate-400 border-slate-300'}`}>
+                {isCompleted ? 'Released' : 'Pending'}
+              </span>
+            </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-900">شهادة إتمام البرنامج</h3>
-              <p className="text-slate-400 text-sm font-medium mt-2">تُمنح بعد إنهاء كافة مراحل التسريع وتدقيق المخرجات.</p>
+              <h3 className="text-xl font-bold text-slate-900 font-heading mb-2">شهادة إتمام البرنامج</h3>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed">شهادة تخرج معتمدة تُمنح بعد استيفاء كافة مخرجات خارطة الطريق.</p>
             </div>
             {!isCompleted && (
-              <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
-                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">المتبقي للتخرج</p>
-                 <div className="w-full bg-blue-200 h-1 rounded-full overflow-hidden">
-                    <div className="bg-blue-600 h-full" style={{ width: `${progress}%` }}></div>
+              <div className="space-y-2">
+                 <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span>Maturity Progress</span>
+                    <span>{Math.round(progress)}%</span>
                  </div>
-                 <p className="text-[9px] font-bold text-blue-500 mt-2">أكمل خارطة الطريق لتفعيل الشهادة.</p>
+                 <div className="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
+                    <div className="bg-primary h-full transition-all duration-1000" style={{ width: `${progress}%` }}></div>
+                 </div>
               </div>
             )}
           </div>
           <button 
             disabled={!isCompleted}
             onClick={onShowCertificate}
-            className={`w-full mt-8 py-4 rounded-2xl font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-2
-              ${isCompleted ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-200' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}
+            className={`w-full mt-10 py-3 rounded-md font-bold text-xs transition-all uppercase tracking-widest
+              ${isCompleted ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:bg-blue-700' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}
             `}
           >
-            <span>عرض الشهادة الرسمية</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth={2.5} /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeWidth={2.5} /></svg>
+            عرض الشهادة الرسمية
           </button>
         </div>
 

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Language, getTranslation } from '../services/i18nService';
 
 interface LandingPageProps {
@@ -9,127 +9,130 @@ interface LandingPageProps {
   lang: Language;
 }
 
-const CINEMATIC_IMAGES = [
-  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2400",
-  "https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&q=80&w=2400",
-  "https://images.unsplash.com/photo-1506477331477-33d6d8b3dc85?auto=format&fit=crop&q=80&w=2400",
-  "https://images.unsplash.com/photo-1623151820421-9705a6111195?auto=format&fit=crop&q=80&w=2400"
-];
-
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onRoadmap, onImpact, lang }) => {
   const t = getTranslation(lang);
-  const [currentIdx, setCurrentIdx] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIdx((prev) => (prev + 1) % CINEMATIC_IMAGES.length);
-    }, 8000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
-    <div className="relative overflow-hidden bg-deep-navy">
-      <style>{`
-        @keyframes cinematic-zoom {
-          0% { transform: scale(1); }
-          100% { transform: scale(1.1); }
-        }
-        .bg-layer {
-          position: absolute;
-          inset: 0;
-          transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .animate-cinematic {
-          animation: cinematic-zoom 20s ease-in-out infinite alternate;
-        }
-        .cinematic-overlay {
-          background: linear-gradient(to bottom, rgba(2, 6, 23, 0.3) 0%, rgba(2, 6, 23, 0.95) 100%);
-        }
-      `}</style>
-
+    <div className="min-h-screen bg-white">
+      
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center px-8 md:px-24 overflow-hidden">
+      <section className="max-w-7xl mx-auto px-8 lg:px-12 pt-40 pb-24 flex flex-col lg:flex-row items-center gap-20">
         
-        {/* Background Layers for Cross-fade */}
-        <div className="absolute inset-0 z-0">
-          {CINEMATIC_IMAGES.map((img, idx) => (
-            <div 
-              key={idx}
-              className={`bg-layer ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
-            >
-              <img 
-                src={img} 
-                className={`w-full h-full object-cover brightness-[0.3] contrast-[1.05] ${idx === currentIdx ? 'animate-cinematic' : ''}`}
-                alt={`Cinematic Background ${idx}`}
-              />
-            </div>
-          ))}
-          <div className="absolute inset-0 cinematic-overlay z-10"></div>
-          <div className="absolute inset-0 cinematic-grid opacity-25 z-15"></div>
-        </div>
-
-        {/* Content Area */}
-        <div className="max-w-7xl mx-auto w-full relative z-30">
-          <div className="max-w-5xl space-y-12 animate-reveal">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 px-5 py-2 glass-premium rounded-full border border-white/10 shadow-glow">
-                <span className="w-1.5 h-1.5 rounded-full bg-electric-blue animate-pulse"></span>
-                <p className="text-white font-black text-[9px] uppercase tracking-[0.4em]">Sovereign Strategic Intelligence</p>
-              </div>
-              <h1 className="text-6xl md:text-[8rem] font-black leading-[0.9] text-white tracking-tighter">
-                بناء الكيانات <br/> 
-                <span className="text-shimmer">بسيادة رقمية.</span>
-              </h1>
-            </div>
-            
-            <p className="text-slate-300 text-xl md:text-3xl font-medium leading-relaxed max-w-4xl border-r-[10px] border-electric-blue pr-10">
-              نهج استباقي لتحويل الرؤى إلى <span className="text-white font-black">مؤسسات سيادية</span>، <br className="hidden md:block" />
-              عبر دمج ذكاء Gemini الاستراتيجي مع دقة التنفيذ الميداني.
+        {/* Right Side: Strategic Content */}
+        <div className="w-full lg:w-3/5 space-y-10 text-right">
+          <div className="space-y-6">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400 border-r-2 border-primary pr-4">
+              Institutional Venture Acceleration
+            </span>
+            <h1 className="text-[56px] font-bold text-slate-900 leading-[1.15] tracking-tight font-heading">
+              هندسة النمو <br/>
+              بمنظور سيادي فاخر.
+            </h1>
+            <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-2xl ml-auto">
+              منصة احتضان وتسريع أعمال مبتكرة، صممت خصيصاً للمشاريع ذات الأثر الاستراتيجي، معتمدة على منهجية التحقق الرقمي المتقدمة لضمان الجاهزية الاستثمارية.
             </p>
-            
-            <div className="flex flex-wrap gap-6 pt-12">
-              <button 
-                onClick={onStart} 
-                className="bg-electric-blue text-white px-14 py-6 rounded-[2.5rem] font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all btn-glow shadow-premium active:scale-95 flex items-center gap-4"
-              >
-                <span>{t.hero.apply}</span>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </button>
-              <button 
-                onClick={onRoadmap} 
-                className="px-12 py-6 glass-premium text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all border border-white/10 rounded-[2.5rem]"
-              >
-                {t.hero.methodology}
-              </button>
-            </div>
+          </div>
+
+          <div className="flex flex-row-reverse gap-4">
+            <button 
+              onClick={onStart}
+              className="btn-primary"
+            >
+              ابدأ التأسيس الرقمي
+            </button>
+            <button 
+              onClick={onRoadmap}
+              className="btn-secondary"
+            >
+              منهجية التسريع
+            </button>
           </div>
         </div>
 
-        {/* Cinematic Scroll Indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-40 opacity-40 group cursor-default hidden md:block">
-           <div className="w-[1px] h-16 bg-gradient-to-b from-electric-blue to-transparent mx-auto group-hover:h-24 transition-all duration-1000"></div>
-           <p className="text-white text-[8px] font-black uppercase tracking-[0.5em] mt-6" style={{writingMode: 'vertical-rl'}}>Explore Potential</p>
+        {/* Left Side: Minimal Visual / Mockup Area */}
+        <div className="w-full lg:w-2/5 flex justify-center">
+           <div className="relative w-full max-w-md aspect-[4/5] bg-slate-50 rounded-xl border border-slate-100 p-8 flex flex-col justify-between shadow-sm">
+              <div className="w-full aspect-video bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden flex items-center justify-center">
+                 <div className="w-12 h-12 bg-primary/10 rounded-full animate-pulse flex items-center justify-center">
+                    <div className="w-4 h-4 bg-primary rounded-full"></div>
+                 </div>
+              </div>
+
+              <div className="space-y-4">
+                 <div className="grid grid-cols-1 gap-3">
+                    {[
+                      { l: 'جاهزية الاستثمار', v: '92%', i: '📈' },
+                      { l: 'كفاءة نموذج العمل', v: 'High', i: '💎' },
+                      { l: 'دعم تقني متكامل', v: '24/7', i: '⚡' }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-100">
+                         <div className="flex items-center gap-3">
+                            <span className="text-lg">{item.i}</span>
+                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{item.l}</span>
+                         </div>
+                         <span className="text-xs font-black text-slate-900">{item.v}</span>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+           </div>
         </div>
       </section>
 
-      {/* Stats Board */}
-      <section className="px-12 py-32 bg-white relative z-20">
-        <div className="max-w-7xl mx-auto">
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-20">
-              {[
-                { label: t.stats.startups, val: '185+', icon: '🚀' },
-                { label: t.stats.capital, val: '$42M', icon: '💰' },
-                { label: t.stats.experts, val: '65+', icon: '🧠' },
-                { label: t.stats.countries, val: '14', icon: '🌍' }
-              ].map((s, i) => (
-                <div key={i} className="space-y-4 group border-r-2 border-slate-50 pr-8 hover:border-electric-blue transition-all duration-500">
-                   <div className="text-3xl mb-2 grayscale group-hover:grayscale-0 transition-all duration-700 opacity-40 group-hover:opacity-100">{s.icon}</div>
-                   <p className="text-6xl font-black text-slate-900 tracking-tighter tabular-nums group-hover:text-electric-blue transition-colors">{s.val}</p>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">{s.label}</p>
-                </div>
-              ))}
-           </div>
+      {/* Metrics */}
+      <section className="border-y border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-12 py-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+             {[
+               { label: 'نسبة النجاح', val: '92%' },
+               { label: 'تمويل مستقطب', val: '$42M' },
+               { label: 'مشروع نشط', val: '+1,400' },
+               { label: 'كيان مؤسس', val: '185' }
+             ].map((s, i) => (
+               <div key={i} className="space-y-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
+                  <h4 className="text-4xl font-bold text-slate-900 tabular-nums">{s.val}</h4>
+               </div>
+             ))}
+          </div>
         </div>
+      </section>
+
+      {/* Philosophy */}
+      <section className="max-w-7xl mx-auto px-12 section-padding grid grid-cols-1 lg:grid-cols-2 gap-24">
+         <div className="space-y-6">
+            <h3 className="text-3xl font-bold text-slate-900">بروتوكول التأسيس</h3>
+            <p className="text-slate-500 text-lg leading-relaxed">
+               نتبع منهجية صارمة تعتمد على البيانات، تبدأ من التحقق الاستراتيجي من المشكلة، وتنتهي بجاهزية الكيان للعرض على لجان الاستثمار العالمية.
+            </p>
+         </div>
+
+         <div className="space-y-12">
+            {[
+               { t: 'التحقق الاستراتيجي', d: 'تحليل جدوى المشكلة وصحة الفرضيات الأولية عبر رادار السوق الرقمي.', i: '01' },
+               { t: 'هيكلة نموذج العمل', d: 'تصميم محرك الإيرادات والقيمة لضمان استدامة الكيان على المدى الطويل.', i: '02' },
+               { t: 'الجاهزية الاستثمارية', d: 'المرحلة النهائية للحصول على الاعتماد والبدء في جولات التمويل.', i: '03' }
+            ].map((step, idx) => (
+               <div key={idx} className="flex gap-8 group">
+                  <span className="text-xs font-bold text-primary tabular-nums mt-1">{step.i}</span>
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-bold text-slate-900 underline-offset-8 group-hover:underline">{step.t}</h4>
+                    <p className="text-slate-500 text-sm leading-relaxed">{step.d}</p>
+                  </div>
+               </div>
+            ))}
+         </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="bg-slate-900 text-white py-32">
+         <div className="max-w-7xl mx-auto px-12 text-center space-y-10">
+            <h2 className="text-4xl font-bold tracking-tight font-heading">هل فكرتك جاهزة للتحول إلى كيان؟</h2>
+            <p className="text-slate-400 text-lg max-w-xl mx-auto">
+               انضم لمجتمع "بيزنس ديفلوبرز" وابدأ رحلة التسريع الاستراتيجية اليوم.
+            </p>
+            <button onClick={onStart} className="px-12 py-4 bg-primary text-white font-bold rounded-lg hover:bg-blue-700 transition-all">قدم طلب الانضمام</button>
+         </div>
       </section>
     </div>
   );

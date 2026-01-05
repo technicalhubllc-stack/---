@@ -72,7 +72,10 @@ export const ServicesPortal: React.FC<ServicesPortalProps> = ({ user }) => {
                    <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-5xl mb-8 shadow-inner group-hover:scale-110 transition-transform">
                       {service.icon}
                    </div>
-                   <h3 className="text-2xl font-black text-slate-900 mb-4">{service.title}</h3>
+                   <h3 className="text-2xl font-black text-slate-900 mb-4 flex items-center gap-2">
+                     {service.title}
+                     <span className="text-sm opacity-30 group-hover:opacity-100 transition-opacity">🌟</span>
+                   </h3>
                    <p className="text-sm text-slate-500 font-medium leading-relaxed mb-10">{service.description}</p>
                 </div>
                 <button 

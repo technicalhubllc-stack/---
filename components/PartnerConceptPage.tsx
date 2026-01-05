@@ -66,7 +66,10 @@ export const PartnerConceptPage: React.FC<PartnerConceptPageProps> = ({ onRegist
            ].map((pillar, i) => (
              <div key={i} className="card-premium p-10 space-y-6 relative overflow-hidden group">
                 <div className="text-5xl mb-4 grayscale group-hover:grayscale-0 transition-all duration-500">{pillar.i}</div>
-                <h4 className="text-2xl font-black dark:text-white text-slate-900">{pillar.t}</h4>
+                <h4 className="text-2xl font-black dark:text-white text-slate-900 flex items-center gap-2">
+                  {pillar.t}
+                  <span className="text-sm opacity-30 group-hover:opacity-100 transition-opacity">🌟</span>
+                </h4>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium">{pillar.d}</p>
                 <div className="absolute bottom-0 right-0 w-24 h-1 bg-blue-600 opacity-0 group-hover:opacity-100 transition-all"></div>
              </div>

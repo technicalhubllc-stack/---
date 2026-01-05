@@ -89,7 +89,10 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ userRole, isDa
                 {getStatusBadge(template.id)}
               </div>
 
-              <h3 className="text-2xl font-black mb-3 group-hover:text-blue-500 transition-colors">{template.title}</h3>
+              <h3 className="text-2xl font-black mb-3 group-hover:text-blue-500 transition-colors flex items-center gap-2">
+                {template.title}
+                <span className="text-sm opacity-50 group-hover:opacity-100 transition-opacity">🌟</span>
+              </h3>
               <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">{template.description}</p>
             </div>
 

@@ -49,133 +49,131 @@ export const SupportHub: React.FC<SupportHubProps> = ({ user }) => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'PENDING': return <span className="px-3 py-1 bg-amber-100 text-amber-600 rounded-full text-[10px] font-black border border-amber-200">قيد المراجعة</span>;
-      case 'IN_PROGRESS': return <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-[10px] font-black border border-blue-200">جاري المعالجة</span>;
-      case 'RESOLVED': return <span className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full text-[10px] font-black border border-emerald-200">تم الحل ✓</span>;
+      case 'PENDING': return <span className="px-3 py-1 bg-slate-50 text-slate-500 rounded-full text-[10px] font-bold border border-slate-200 uppercase tracking-widest">Pending</span>;
+      case 'IN_PROGRESS': return <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 uppercase tracking-widest">In Progress</span>;
+      case 'RESOLVED': return <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold border border-emerald-100 uppercase tracking-widest">Resolved ✓</span>;
       default: return null;
     }
   };
 
-  const getTypeStyle = (type: TicketType) => {
+  const getTypeLabel = (type: TicketType) => {
     switch (type) {
-      case 'INQUIRY': return { icon: '❓', color: 'text-blue-500', bg: 'bg-blue-50', label: 'استفسار' };
-      case 'COMPLAINT': return { icon: '⚠️', color: 'text-rose-500', bg: 'bg-rose-50', label: 'شكوى' };
-      case 'SUPPORT': return { icon: '🎧', color: 'text-amber-500', bg: 'bg-amber-50', label: 'طلب دعم' };
+      case 'INQUIRY': return 'استفسار عام';
+      case 'COMPLAINT': return 'شكوى إدارية';
+      case 'SUPPORT': return 'طلب دعم تقني';
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 animate-fade-up pb-20">
-      {/* Header Info */}
+    <div className="max-w-5xl mx-auto space-y-12 animate-fade-up pb-20">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-slate-100 pb-10">
-        <div>
-          <h2 className="text-4xl font-black text-slate-900 tracking-tight">مركز الدعم والمؤازرة</h2>
-          <p className="text-slate-500 font-medium mt-2">تواصل مع الفريق الإداري والاستشاري لحل التحديات التي تواجه مشروعك.</p>
+        <div className="space-y-1">
+          <h3 className="text-2xl font-bold text-slate-900 font-heading">مركز المساندة المؤسسي</h3>
+          <p className="text-slate-500 text-sm font-medium">قنوات التواصل المباشرة مع الفريق الإداري والاستشاري.</p>
         </div>
         <button 
           onClick={() => setShowForm(!showForm)}
-          className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3"
+          className="btn-primary"
         >
-          {showForm ? 'إلغاء الطلب' : 'إنشاء تذكرة جديدة +'}
+          {showForm ? 'إلغاء التذكرة' : 'فتح تذكرة جديدة'}
         </button>
       </div>
 
-      {/* New Ticket Form */}
       {showForm && (
-        <div className="bg-white p-10 rounded-[3rem] border border-blue-100 shadow-2xl animate-fade-in-up">
+        <div className="bg-white p-10 rounded-xl border border-slate-200 shadow-sm animate-fade-in">
            <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">نوع الطلب</label>
-                    <div className="grid grid-cols-3 gap-3">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pr-1">نوع الطلب</label>
+                    <div className="grid grid-cols-3 gap-2">
                        {(['INQUIRY', 'COMPLAINT', 'SUPPORT'] as TicketType[]).map(type => (
                          <button 
                           key={type}
                           type="button"
                           onClick={() => setFormData({...formData, type})}
-                          className={`py-4 rounded-xl text-xs font-black border-2 transition-all ${formData.type === type ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-slate-50 border-transparent text-slate-400'}`}
+                          className={`py-3 rounded-md text-[11px] font-bold border transition-all ${formData.type === type ? 'bg-primary text-white border-primary' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}
                          >
-                            {getTypeStyle(type).label}
+                            {getTypeLabel(type)}
                          </button>
                        ))}
                     </div>
                  </div>
-                 <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">عنوان الموضوع</label>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pr-1">عنوان الموضوع</label>
                     <input 
                       required
-                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-600 font-bold"
-                      placeholder="مثال: مشكلة في رفع ملفات MVP"
+                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-md outline-none focus:bg-white focus:border-primary transition-all font-bold text-sm text-slate-900"
+                      placeholder="مثال: استفسار حول الجولة الاستثمارية..."
                       value={formData.subject}
                       onChange={e => setFormData({...formData, subject: e.target.value})}
                     />
                  </div>
               </div>
-              <div className="space-y-3">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">تفاصيل الرسالة</label>
+              <div className="space-y-2">
+                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pr-1">تفاصيل الرسالة</label>
                  <textarea 
                     required
-                    className="w-full h-40 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] outline-none focus:border-blue-600 font-medium resize-none shadow-inner"
-                    placeholder="اشرح مشكلتك أو استفسارك بوضوح..."
+                    className="w-full h-40 p-6 bg-slate-50 border border-slate-200 rounded-md outline-none focus:bg-white focus:border-primary transition-all font-medium text-sm text-slate-700 resize-none"
+                    placeholder="اشرح طلبك بوضوح وتفصيل ليتمكن الفريق من مساعدتك..."
                     value={formData.message}
                     onChange={e => setFormData({...formData, message: e.target.value})}
                  />
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-4">
                  <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="px-12 py-5 bg-slate-900 text-white rounded-2xl font-black text-lg shadow-xl hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+                  className="btn-primary px-12"
                  >
-                    {isSubmitting ? 'جاري الإرسال...' : 'إرسال التذكرة للإدارة'}
+                    {isSubmitting ? 'جاري الإرسال...' : 'إرسال التذكرة الرسمية'}
                  </button>
               </div>
            </form>
         </div>
       )}
 
-      {/* Tickets List */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {tickets.length > 0 ? (
-          tickets.map(ticket => {
-            const style = getTypeStyle(ticket.type);
-            return (
-              <div key={ticket.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:border-blue-200 transition-all group">
-                 <div className="flex flex-col md:flex-row justify-between gap-6">
-                    <div className="flex items-start gap-6">
-                       <div className={`w-14 h-14 ${style.bg} ${style.color} rounded-2xl flex items-center justify-center text-2xl shadow-inner shrink-0 mt-1`}>
-                          {style.icon}
-                       </div>
-                       <div className="space-y-2">
-                          <div className="flex items-center gap-3">
-                             <h4 className="text-xl font-black text-slate-900">{ticket.subject}</h4>
-                             {getStatusBadge(ticket.status)}
-                          </div>
-                          <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-2xl">{ticket.message}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                             تاريخ الطلب: {new Date(ticket.createdAt).toLocaleDateString('ar-EG')} • ID: {ticket.id}
-                          </p>
-                       </div>
+          tickets.map(ticket => (
+            <div key={ticket.id} className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-all group">
+               <div className="flex flex-col md:flex-row justify-between gap-6">
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-center gap-4">
+                       <span className="text-[9px] font-black text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 uppercase tracking-tighter">
+                          {ticket.type}
+                       </span>
+                       {getStatusBadge(ticket.status)}
                     </div>
-                    <div className="shrink-0 flex items-center">
-                       {ticket.reply ? (
-                         <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
-                            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">رد الإدارة:</p>
-                            <p className="text-xs font-bold text-slate-700">{ticket.reply}</p>
-                         </div>
-                       ) : (
-                         <p className="text-[10px] font-black text-slate-300 uppercase italic">بانتظار رد الفريق المختص...</p>
-                       )}
+                    <div>
+                       <h4 className="text-lg font-bold text-slate-900 font-heading mb-2">{ticket.subject}</h4>
+                       <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-3xl">{ticket.message}</p>
                     </div>
-                 </div>
-              </div>
-            );
-          })
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                       Reference: {ticket.id} • {new Date(ticket.createdAt).toLocaleDateString('ar-EG')}
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 flex items-center">
+                     {ticket.reply ? (
+                       <div className="p-6 bg-slate-50 border border-slate-100 rounded-lg max-w-xs">
+                          <p className="text-[9px] font-bold text-primary uppercase tracking-widest mb-2">رد الإدارة الموثق:</p>
+                          <p className="text-xs font-bold text-slate-700 leading-relaxed italic">"{ticket.reply}"</p>
+                       </div>
+                     ) : (
+                       <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                          <span className="w-1.5 h-1.5 bg-slate-200 rounded-full animate-pulse"></span>
+                          بانتظار المراجعة
+                       </div>
+                     )}
+                  </div>
+               </div>
+            </div>
+          ))
         ) : (
-          <div className="py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 text-center opacity-30 flex flex-col items-center">
-             <span className="text-6xl mb-6">💬</span>
-             <p className="text-xl font-black text-slate-400">لا توجد طلبات دعم سابقة</p>
-             <p className="text-sm font-bold mt-2">عند وجود أي تحدي، فريقنا متاح لخدمتكم ٢٤/٧.</p>
+          <div className="py-24 bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-200 text-center flex flex-col items-center">
+             <div className="text-4xl mb-6 opacity-30">✉️</div>
+             <p className="text-lg font-bold text-slate-400 font-heading">لا توجد طلبات مساندة مفتوحة</p>
+             <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-widest">No active support requests found</p>
           </div>
         )}
       </div>

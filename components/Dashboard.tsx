@@ -292,7 +292,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   const getComplexityBadge = (complexity?: string) => {
     switch(complexity) {
-      case 'Elite': return <span className="bg-saudi-black text-white px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-white/20">Elite Challenge</span>;
+      case 'Elite': return <span className="bg-slate-900 text-white px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-white/20">Elite Challenge</span>;
       case 'High': return <span className="bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-rose-500/20">High Complexity</span>;
       case 'Medium': return <span className="bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-blue-500/20">Strategic Mid</span>;
       default: return null;
@@ -304,20 +304,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <style>{`
         .sidebar-neo { backdrop-filter: blur(40px); background: ${isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.7)'}; border-left: 1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}; }
         .dashboard-header { backdrop-filter: blur(20px); background: ${isDark ? 'rgba(2, 6, 23, 0.6)' : 'rgba(248, 250, 252, 0.6)'}; border-bottom: 1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}; }
-        .active-nav { background: #2563eb; color: white; box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.5); transform: ${t.dir === 'rtl' ? 'translateX(-6px)' : 'translateX(6px)'}; }
+        .active-nav { background: #4F46E5; color: white; box-shadow: 0 12px 30px -10px rgba(79, 70, 229, 0.5); transform: ${t.dir === 'rtl' ? 'translateX(-6px)' : 'translateX(6px)'}; }
         .card-neo { transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1); border: 1px solid ${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'}; background: ${isDark ? 'rgba(30, 41, 59, 0.25)' : 'rgba(255, 255, 255, 0.9)'}; }
         .card-neo:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); }
         .input-profile { width: 100%; padding: 1rem; border-radius: 1rem; border: 1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}; background: ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'}; outline: none; transition: all 0.3s; font-weight: bold; }
-        .input-profile:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); background: ${isDark ? 'rgba(255,255,255,0.05)' : 'white'}; }
-        .progress-glow { box-shadow: 0 0 10px rgba(37, 99, 235, 0.4); }
+        .input-profile:focus { border-color: #4F46E5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); background: ${isDark ? 'rgba(255,255,255,0.05)' : 'white'}; }
+        .progress-glow { box-shadow: 0 0 10px rgba(79, 70, 229, 0.4); }
       `}</style>
 
-      {/* Floating Modern Sidebar */}
+      {/* Sidebar */}
       <aside className={`fixed inset-y-0 ${t.dir === 'rtl' ? 'right-0' : 'left-0'} z-50 w-72 lg:static transition-transform duration-700 ${isMobileMenuOpen ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full lg:translate-x-0' : '-translate-x-full lg:translate-x-0')} sidebar-neo flex flex-col m-4 rounded-[3rem] shadow-premium`}>
         <div className="p-10 text-center space-y-6">
           <div className="relative inline-block group">
-            <div className="absolute inset-0 bg-blue-600 rounded-[2.5rem] blur-[30px] opacity-10 group-hover:opacity-40 transition-opacity"></div>
-            <div className="w-24 h-24 mx-auto relative bg-gradient-to-br from-blue-600 to-indigo-600 rounded-[2.2rem] flex items-center justify-center shadow-2xl overflow-hidden border-2 border-white/20 transform group-hover:rotate-12 transition-transform duration-500">
+            <div className="absolute inset-0 bg-primary rounded-[2.5rem] blur-[30px] opacity-10 group-hover:opacity-40 transition-opacity"></div>
+            <div className="w-24 h-24 mx-auto relative bg-gradient-to-br from-primary to-indigo-600 rounded-[2.2rem] flex items-center justify-center shadow-2xl overflow-hidden border-2 border-white/20 transform group-hover:rotate-12 transition-transform duration-500">
               {userProfile.logo ? <img src={userProfile.logo} className="w-full h-full object-cover" alt="logo" /> : <span className="text-white text-4xl font-black">BD</span>}
             </div>
           </div>
@@ -335,7 +335,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <button 
               key={item.id} 
               onClick={() => { setActiveNav(item.id); setIsMobileMenuOpen(false); playPositiveSound(); }} 
-              className={`w-full flex items-center justify-between p-4 rounded-[1.8rem] font-bold text-sm transition-all duration-300 group ${activeNav === item.id ? 'active-nav' : `text-slate-400 hover:bg-blue-600/5 hover:text-blue-500`}`}
+              className={`w-full flex items-center justify-between p-4 rounded-[1.8rem] font-bold text-sm transition-all duration-300 group ${activeNav === item.id ? 'active-nav' : `text-slate-400 hover:bg-primary/5 hover:text-primary`}`}
             >
               <div className="flex items-center gap-4">
                 <span className={`text-2xl transition-all duration-300 group-hover:scale-125 ${activeNav === item.id ? '' : 'grayscale opacity-50'}`}>{item.icon}</span>
@@ -347,10 +347,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </nav>
 
         <div className="p-6 space-y-4">
-          <div className="px-4 mb-4">
-             <LanguageSwitcher currentLang={lang} onLanguageChange={onLanguageChange} variant="minimal" />
-          </div>
-          <button onClick={() => { const n = isDark ? 'light' : 'dark'; setThemeMode(n); localStorage.setItem('dashboard_theme_mode', n); }} className={`w-full p-4 rounded-2xl border transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-900/50 text-slate-400 hover:text-amber-400' : 'border-slate-200 bg-white text-slate-600 hover:text-blue-600 hover:border-blue-500'} text-[10px] font-black uppercase tracking-widest`}>
+          <LanguageSwitcher currentLang={lang} onLanguageChange={onLanguageChange} variant="minimal" />
+          <button onClick={() => { const n = isDark ? 'light' : 'dark'; setThemeMode(n); localStorage.setItem('dashboard_theme_mode', n); }} className={`w-full p-4 rounded-2xl border transition-all duration-300 ${isDark ? 'border-slate-800 bg-slate-900/50 text-slate-400 hover:text-amber-400' : 'border-slate-200 bg-white text-slate-600 hover:text-primary hover:border-primary'} text-[10px] font-black uppercase tracking-widest`}>
              {isDark ? '☀️ Switch Theme' : '🌙 Switch Theme'}
           </button>
           <button onClick={onLogout} className="w-full p-4 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500/5 rounded-2xl transition-colors">{t.dashboard.logout}</button>
@@ -361,17 +359,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-24 dashboard-header flex items-center justify-between px-10 z-40">
            <div className="flex items-center gap-6">
-              <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-3 glass rounded-2xl text-blue-500">
+              <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-3 glass rounded-2xl text-primary">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 6h16M4 12h16M4 18h16" /></svg>
               </button>
               <div>
                 <h2 className={`text-3xl font-black tracking-tight leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>{NAV_ITEMS.find(i => i.id === activeNav)?.label}</h2>
-                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-2 opacity-80">AI Accelerator v2.8</p>
+                <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-2 opacity-80">AI Accelerator v2.8</p>
               </div>
            </div>
            <div className="flex items-center gap-4">
               {activeNav === 'startup_profile' && (
-                <button onClick={handleSaveProfile} disabled={isSaving} className="bg-Saudiblue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
+                <button onClick={handleSaveProfile} disabled={isSaving} className="bg-primary text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all hover:bg-indigo-700">
                   {isSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
                 </button>
               )}
@@ -381,7 +379,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {isAISuggesting ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : '✨'}
                     <span>تحديث الأيقونات (AI)</span>
                   </button>
-                  <button onClick={onOpenProAnalytics} className="bg-Saudiblue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all hover:bg-blue-700">تحليلات PRO</button>
+                  <button onClick={onOpenProAnalytics} className="bg-primary text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all hover:bg-indigo-700">تحليلات PRO</button>
                  </>
               )}
               {activeNav === 'tasks' && (
@@ -397,12 +395,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
              <div className="max-w-6xl mx-auto space-y-12 animate-fade-in-up pb-20">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                   <div className="p-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[3.5rem] text-white premium-shadow relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg- Saudiwhite/10 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000"></div>
+                   <div className="p-10 bg-gradient-to-br from-primary to-indigo-700 rounded-[3.5rem] text-white premium-shadow relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000"></div>
                       <p className="text-[11px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">إنجاز المسار التدريبي</p>
                       <h3 className="text-6xl font-black tracking-tighter">{Math.round(progress)}%</h3>
-                      <div className="mt-10 bg-Saudiwhite/20 h-2.5 rounded-full overflow-hidden shadow-inner">
-                        <div className="bg-Saudiwhite h-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
+                      <div className="mt-10 bg-white/20 h-2.5 rounded-full overflow-hidden shadow-inner">
+                        <div className="bg-white h-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
                       </div>
                    </div>
                    <div className={`p-10 rounded-[3.5rem] card-neo flex flex-col justify-between`}>
@@ -436,7 +434,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             <div 
                               key={level.id} 
                               onClick={() => !level.isLocked && onSelectLevel(level.id)} 
-                              className={`p-10 flex flex-col md:flex-row items-center justify-between transition-all duration-300 ${level.isLocked ? 'opacity-40 grayscale cursor-not-allowed' : 'cursor-pointer hover:bg-blue-600/[0.03]'} group`}
+                              className={`p-10 flex flex-col md:flex-row items-center justify-between transition-all duration-300 ${level.isLocked ? 'opacity-40 grayscale cursor-not-allowed' : 'cursor-pointer hover:bg-primary/[0.03]'} group`}
                             >
                                <div className="flex items-center gap-8 flex-1 min-w-0">
                                   <div className={`w-20 h-20 rounded-[2.2rem] flex items-center justify-center text-5xl shrink-0 transition-all premium-shadow ${level.isCompleted ? (colorSet.bg) + ' text-white' : (level.isLocked ? (isDark ? 'bg-slate-800 text-slate-600' : 'bg-slate-100 text-slate-300') : colorSet.light + ' ' + colorSet.text)} group-hover:scale-110 group-hover:rotate-3`}>
@@ -453,24 +451,34 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                     <h4 className={`font-black text-2xl transition-colors ${!level.isLocked ? 'group-hover:' + colorSet.text : ''}`}>
                                       {level.title}
                                     </h4>
-                                    <p className="text-sm text-slate-500 font-medium truncate mt-2 opacity-80">{level.description}</p>
                                     
+                                    <div className="flex gap-4 mt-2 mb-4">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-[10px] text-slate-400 uppercase font-black">Pillars:</span>
+                                        <span className={`text-[10px] font-black ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{level.pillars?.length || 0}</span>
+                                      </div>
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-[10px] text-slate-400 uppercase font-black">Resources:</span>
+                                        <span className={`text-[10px] font-black ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{level.resources?.length || 0}</span>
+                                      </div>
+                                    </div>
+
                                     {/* Detailed Visual Progress Indicator */}
-                                    <div className="mt-6 max-w-md space-y-2">
+                                    <div className="mt-4 max-w-md space-y-2">
                                       <div className="flex justify-between items-center">
                                          <div className="flex gap-1.5">
-                                            {[...Array(5)].map((_, i) => (
-                                              <div key={i} className={`w-3 h-1 rounded-full ${level.isCompleted ? 'bg-saudi-green' : (i < 2 && !level.isLocked ? colorSet.bg : 'bg-slate-200 dark:bg-white/5')}`}></div>
+                                            {[...Array(6)].map((_, i) => (
+                                              <div key={i} className={`w-3 h-1 rounded-full ${level.isCompleted ? 'bg-emerald-500' : (i < 1 && !level.isLocked ? colorSet.bg : 'bg-slate-200 dark:bg-white/5')}`}></div>
                                             ))}
                                          </div>
-                                         <span className={`text-[10px] font-black uppercase tracking-widest ${level.isCompleted ? 'text-saudi-green' : 'text-slate-400'}`}>
-                                            {level.isCompleted ? 'Verified & Completed' : (level.isLocked ? 'Locked' : 'Action Required')}
+                                         <span className={`text-[10px] font-black uppercase tracking-widest ${level.isCompleted ? 'text-emerald-500' : 'text-slate-400'}`}>
+                                            {level.isCompleted ? 'Maturity Verified' : (level.isLocked ? 'Protocol Locked' : 'Stage Active')}
                                          </span>
                                       </div>
                                       <div className="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner">
                                         <div 
-                                          className={`h-full transition-all duration-1000 ease-out progress-glow ${level.isCompleted ? 'bg-saudi-green' : colorSet.bg}`} 
-                                          style={{ width: level.isCompleted ? '100%' : (level.isLocked ? '0%' : '15%') }}
+                                          className={`h-full transition-all duration-1000 ease-out progress-glow ${level.isCompleted ? 'bg-emerald-500' : colorSet.bg}`} 
+                                          style={{ width: level.isCompleted ? '100%' : (level.isLocked ? '0%' : '20%') }}
                                         ></div>
                                       </div>
                                     </div>
@@ -484,7 +492,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                         <span className="text-[10px] font-black uppercase tracking-widest">Protocol Encrypted</span>
                                     </div>
                                   ) : (
-                                    <div className={`flex items-center gap-4 px-10 py-5 rounded-[1.8rem] border transition-all duration-500 ${level.isCompleted ? 'bg-saudi-green text-white border-saudi-green shadow-2xl shadow-saudi-green/20' : colorSet.bg + ' text-white border-transparent shadow-2xl shadow-blue-600/30 hover:brightness-110 hover:-translate-y-1'}`}>
+                                    <div className={`flex items-center gap-4 px-10 py-5 rounded-[1.8rem] border transition-all duration-500 ${level.isCompleted ? 'bg-emerald-500 text-white border-emerald-500 shadow-2xl shadow-emerald-500/20' : colorSet.bg + ' text-white border-transparent shadow-2xl shadow-primary/30 hover:brightness-110 hover:-translate-y-1'}`}>
                                         <span className="text-xs font-black uppercase tracking-widest">{level.isCompleted ? 'مراجعة المخرجات' : 'دخول التنفيذ الآن'}</span>
                                         <span className="text-2xl leading-none transition-transform group-hover:translate-x-[-4px]">{level.isCompleted ? '✓' : '→'}</span>
                                     </div>
@@ -513,11 +521,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                      const taskProgress = getTaskProgress(task.status);
                      return (
                        <div key={task.id} className="p-10 rounded-[3.5rem] card-neo relative overflow-hidden flex flex-col justify-between group">
-                          <div className={`absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-[4rem] transition-all group-hover:scale-110 ${task.levelId > 0 ? 'bg-blue-600' : 'bg-emerald-600'}`}></div>
+                          <div className={`absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-[4rem] transition-all group-hover:scale-110 ${task.levelId > 0 ? 'bg-primary' : 'bg-emerald-600'}`}></div>
                           
                           <div>
                             <div className="flex justify-between items-center mb-8">
-                               <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${task.levelId > 0 ? 'text-blue-500' : 'text-emerald-500'}`}>
+                               <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${task.levelId > 0 ? 'text-primary' : 'text-emerald-500'}`}>
                                  {task.levelId > 0 ? `Strategic Milestone 0${task.levelId}` : 'Custom Project Task'}
                                </span>
                                {getStatusBadge(task)}
@@ -529,11 +537,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             <div className="space-y-3 mb-10">
                                <div className="flex justify-between items-center">
                                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Task Integrity</span>
-                                  <span className={`text-sm font-black ${taskProgress === 100 ? 'text-emerald-500' : 'text-blue-600'}`}>{taskProgress}%</span>
+                                  <span className={`text-sm font-black ${taskProgress === 100 ? 'text-emerald-500' : 'text-primary'}`}>{taskProgress}%</span>
                                </div>
                                <div className="h-2 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
                                   <div 
-                                    className={`h-full transition-all duration-1000 ease-out ${taskProgress === 100 ? 'bg-emerald-500' : 'bg-blue-600'}`} 
+                                    className={`h-full transition-all duration-1000 ease-out ${taskProgress === 100 ? 'bg-emerald-500' : 'bg-primary'}`} 
                                     style={{ width: `${taskProgress}%` }}
                                   ></div>
                                </div>
@@ -542,7 +550,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
                           <div className="pt-6 border-t border-slate-50 dark:border-white/5">
                             {task.status === 'ASSIGNED' && (
-                               <button onClick={() => setSelectedTask(task)} className={`w-full py-5 text-white rounded-2xl font-black text-sm hover:brightness-110 transition-all shadow-xl active:scale-95 ${task.levelId > 0 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-600/20' : 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-600/20'}`}>
+                               <button onClick={() => setSelectedTask(task)} className={`w-full py-5 text-white rounded-2xl font-black text-sm hover:brightness-110 transition-all shadow-xl active:scale-95 ${task.levelId > 0 ? 'bg-gradient-to-r from-primary to-indigo-600 shadow-primary/20' : 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-600/20'}`}>
                                  تسليم المخرج (PDF)
                                </button>
                             )}
@@ -569,7 +577,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
            {activeNav === 'opportunity_lab' && (
              <div className="max-w-6xl mx-auto space-y-14 animate-fade-in-up pb-20">
                 <div className="text-center space-y-6">
-                   <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-600 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-blue-100 mx-auto">
+                   <div className="inline-flex items-center gap-3 bg-blue-50 text-primary px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-blue-100 mx-auto">
                       AI Deep Analysis Engine
                    </div>
                    <h3 className="text-5xl font-black tracking-tight text-slate-900 dark:text-white">مختبر الفرص والنمو</h3>
@@ -578,7 +586,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 {!oppResult && (
                   <div className="flex flex-col items-center py-24 space-y-10">
                      <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-[2.5rem] flex items-center justify-center text-5xl animate-bounce">🧭</div>
-                     <button onClick={handleRunOppAnalysis} disabled={isAnalyzingOpp} className="px-16 py-6 bg-slate-900 text-white rounded-[2.2rem] font-black text-xl shadow-2xl hover:bg-blue-600 transition-all active:scale-95 flex items-center gap-5">
+                     <button onClick={handleRunOppAnalysis} disabled={isAnalyzingOpp} className="px-16 py-6 bg-slate-900 text-white rounded-[2.2rem] font-black text-xl shadow-2xl hover:bg-primary transition-all active:scale-95 flex items-center gap-5">
                         {isAnalyzingOpp ? (
                           <>
                             <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -594,8 +602,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           {oppResult.newMarkets.map((m, i) => (
                             <div key={i} className={`p-10 rounded-[3.5rem] card-neo relative overflow-hidden`}>
-                               <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-[4rem]"></div>
-                               <h5 className="text-2xl font-black text-blue-600 mb-6">{m.region}</h5>
+                               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[4rem]"></div>
+                               <h5 className="text-2xl font-black text-primary mb-6">{m.region}</h5>
                                <p className="text-base text-slate-600 dark:text-slate-400 font-medium leading-relaxed">{m.reasoning}</p>
                                <div className="mt-8 flex items-center gap-4">
                                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">ROI Potential:</span>
@@ -606,7 +614,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                        </div>
                     </div>
                     <div className="space-y-8">
-                       <div className="p-12 bg-gradient-to-br from-indigo-600 to-blue-800 text-white rounded-[4rem] premium-shadow relative overflow-hidden group">
+                       <div className="p-12 bg-gradient-to-br from-indigo-600 to-primary text-white rounded-[4rem] premium-shadow relative overflow-hidden group">
                           <div className="absolute top-[-20px] left-[-20px] text-9xl opacity-10 group-hover:rotate-12 transition-transform duration-700">💭</div>
                           <h4 className="text-xl font-black mb-8 relative z-10 flex items-center gap-4">
                              <span className="w-1.5 h-6 bg-white/40 rounded-full"></span>
@@ -634,7 +642,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           <h4 className="text-2xl font-black mb-4 leading-tight">{svc.title}</h4>
                           <p className="text-sm text-slate-500 mb-10 leading-relaxed font-medium line-clamp-3">{svc.description}</p>
                         </div>
-                        <button onClick={() => { setSelectedService(svc); playPositiveSound(); }} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-blue-600 transition-all active:scale-95 shadow-lg">اكتشف الباقات المتاحة</button>
+                        <button onClick={() => { setSelectedService(svc); playPositiveSound(); }} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-primary transition-all active:scale-95 shadow-lg">اكتشف الباقات المتاحة</button>
                      </div>
                    ))}
                 </div>
@@ -646,7 +654,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 {/* Founder Info Card */}
                 <div className="p-10 rounded-[3rem] card-neo space-y-10 relative overflow-hidden">
                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">👤</div>
+                      <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">👤</div>
                       <h3 className="text-2xl font-black">بيانات المؤسس</h3>
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -670,7 +678,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                    <div className="flex flex-col md:flex-row gap-12">
                       <div className="w-full md:w-1/3 flex flex-col items-center gap-6">
                         <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                           <div className="w-48 h-48 rounded-[3.5rem] border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center bg-slate-50 dark:bg-slate-900/50 overflow-hidden shadow-inner group-hover:border-blue-500 transition-colors">
+                           <div className="w-48 h-48 rounded-[3.5rem] border-4 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center bg-slate-50 dark:bg-slate-900/50 overflow-hidden shadow-inner group-hover:border-primary transition-colors">
                               {userProfile.logo ? <img src={userProfile.logo} className="w-full h-full object-cover" alt="logo" /> : <span className="text-6xl opacity-30">📁</span>}
                            </div>
                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 rounded-[3.5rem] transition-opacity font-black text-[10px] uppercase tracking-widest">رفع الشعار</div>
@@ -733,7 +741,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                                {userProfile.partners.map((p, i) => (
                                  <div key={i} className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-white/5 flex justify-between items-center group animate-fade-in">
                                     <div className="flex items-center gap-4">
-                                       <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black">{p.name.charAt(0)}</div>
+                                       <div className="w-10 h-10 rounded-full bg-blue-50 text-primary flex items-center justify-center font-black">{p.name.charAt(0)}</div>
                                        <div>
                                           <p className="font-black text-sm">{p.name}</p>
                                           <p className="text-[10px] text-slate-500 font-bold uppercase">{p.role}</p>
@@ -754,7 +762,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div className="flex justify-center pt-10">
-                   <button onClick={handleSaveProfile} disabled={isSaving} className="px-20 py-7 bg-blue-600 text-white rounded-[2.5rem] font-black text-2xl shadow-3xl shadow-blue-500/30 hover:bg-blue-700 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50">
+                   <button onClick={handleSaveProfile} disabled={isSaving} className="px-20 py-7 bg-primary text-white rounded-[2.5rem] font-black text-2xl shadow-3xl shadow-primary/30 hover:bg-indigo-700 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50">
                       {isSaving ? 'جاري مزامنة البيانات...' : 'حفظ الملف التعريفي 🚀'}
                    </button>
                 </div>
@@ -777,7 +785,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <p className="text-slate-500 text-sm leading-relaxed font-medium">{selectedTask.description}</p>
               </div>
               
-              <div onClick={() => taskFileRef.current?.click()} className={`w-full h-72 border-4 border-dashed rounded-[3rem] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${submissionFile ? 'bg-emerald-500/5 border-emerald-500' : (isDark ? 'bg-slate-800 border-white/5 hover:border-blue-500/50' : 'bg-slate-50 border-slate-200 hover:border-blue-500/50')}`}>
+              <div onClick={() => taskFileRef.current?.click()} className={`w-full h-72 border-4 border-dashed rounded-[3rem] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${submissionFile ? 'bg-emerald-500/5 border-emerald-500' : (isDark ? 'bg-slate-800 border-white/5 hover:border-primary/50' : 'bg-slate-50 border-slate-200 hover:border-primary/50')}`}>
                  <input type="file" ref={taskFileRef} className="hidden" accept="application/pdf" onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file && file.type === 'application/pdf') {
@@ -797,7 +805,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                    </>
                  ) : (
                    <>
-                      <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg mb-6 transform group-hover:scale-110 transition-transform">📁</div>
+                      <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg mb-6 transform group-hover:scale-110 transition-transform">📁</div>
                       <p className="font-black text-slate-400">انقر هنا لرفع مخرجك النهائي بصيغة PDF</p>
                       <p className="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-widest">Maximum Size: 5MB</p>
                    </>
@@ -806,7 +814,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               <div className="flex gap-4 mt-10">
                 <button onClick={() => { setSelectedTask(null); setSubmissionFile(null); }} className="flex-1 py-5 font-black text-slate-400 hover:text-slate-600 transition-colors">إغلاق</button>
-                <button onClick={handleTaskSubmit} disabled={!submissionFile} className="flex-[2] py-5 bg-blue-600 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-blue-500/30 disabled:opacity-30 active:scale-95 transition-all hover:bg-blue-700">إرسال المخرج للمراجعة 🚀</button>
+                <button onClick={handleTaskSubmit} disabled={!submissionFile} className="flex-[2] py-5 bg-primary text-white rounded-[2rem] font-black text-lg shadow-xl shadow-primary/30 disabled:opacity-30 active:scale-95 transition-all hover:bg-indigo-700">إرسال المخرج للمراجعة 🚀</button>
               </div>
             </div>
           </div>

@@ -60,8 +60,9 @@ export const storageService = {
         status: 'PENDING',
         currentTrack: 'Idea',
         metrics: { readiness: 10, tech: 0, market: 0 },
+        // Fixed missing revenue and burnRate properties in kpiHistory
         kpiHistory: [
-          { date: 'أسبوع 1', growth: 10, techReadiness: 10, marketEngagement: 5 }
+          { date: 'أسبوع 1', growth: 10, techReadiness: 10, marketEngagement: 5, revenue: 0, burnRate: 0 }
         ],
         riskLevel: 'Low',
         aiOpinion: 'بانتظار المخرجات الأولى للتقييم الذكي.',

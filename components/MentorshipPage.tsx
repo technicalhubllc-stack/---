@@ -268,7 +268,10 @@ export const MentorshipPage: React.FC<MentorshipPageProps> = ({ user, onBack }) 
                 <div className="relative z-10 space-y-12">
                    <div className="space-y-4">
                       <div className="w-20 h-20 bg-blue-600 rounded-[2.2rem] flex items-center justify-center text-white shadow-2xl shadow-blue-500/20 text-4xl transform rotate-3">🤝</div>
-                      <h2 className="text-5xl font-black text-slate-900 tracking-tighter">انضم لمجتمع مرشدي النخبة</h2>
+                      <h2 className="text-5xl font-black text-slate-900 tracking-tighter flex items-center gap-4">
+                        انضم لمجتمع مرشدي النخبة
+                        <span className="text-2xl opacity-40">🌟</span>
+                      </h2>
                       <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-2xl">ساهم بخبراتك في بناء الجيل القادم من قادة الأعمال. عملية الانضمام تخضع لمعايير تدقيق دقيقة لضمان أعلى جودة توجيه.</p>
                    </div>
 

@@ -280,7 +280,10 @@ export const PartnerMatchingWorkflow: React.FC<PartnerMatchingWorkflowProps> = (
                     <div className="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center text-4xl shadow-inner group-hover:rotate-6 transition-transform border border-white/5">👤</div>
                     <span className="px-5 py-2 bg-electric-blue/10 text-electric-blue text-[11px] font-black rounded-full uppercase tracking-widest border border-electric-blue/20">{partner.primaryRole}</span>
                   </div>
-                  <h4 className="text-3xl font-black text-white mb-3">{partner.name}</h4>
+                  <h4 className="text-3xl font-black text-white mb-3 flex items-center gap-2">
+                    {partner.name}
+                    <span className="text-sm opacity-30 group-hover:opacity-100 transition-opacity">🌟</span>
+                  </h4>
                   <p className="text-xs text-slate-500 font-bold mb-8 uppercase tracking-widest">{partner.experienceYears} سنوات خبرة • {partner.city}</p>
                   <p className="text-slate-400 text-lg leading-relaxed font-medium mb-10 line-clamp-4 italic border-r-2 border-white/10 pr-4">"{partner.bio}"</p>
                   

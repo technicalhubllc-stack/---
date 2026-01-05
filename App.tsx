@@ -12,10 +12,13 @@ const Login = React.lazy(() => import('./components/Login').then(m => ({ default
 const DashboardHub = React.lazy(() => import('./components/DashboardHub').then(m => ({ default: m.DashboardHub })));
 const RoadmapPage = React.lazy(() => import('./components/RoadmapPage').then(m => ({ default: m.RoadmapPage })));
 const ImpactPage = React.lazy(() => import('./components/ImpactPage').then(m => ({ default: m.ImpactPage })));
+const StaffPortal = React.lazy(() => import('./components/StaffPortal').then(m => ({ default: m.StaffPortal })));
+const CoFounderPortal = React.lazy(() => import('./components/CoFounderPortal').then(m => ({ default: m.CoFounderPortal })));
+const MentorshipPage = React.lazy(() => import('./components/MentorshipPage').then(m => ({ default: m.MentorshipPage })));
 
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-deep-navy flex items-center justify-center">
-    <div className="w-12 h-12 border-4 border-electric-blue/20 border-t-electric-blue rounded-full animate-spin"></div>
+  <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-slate-200 border-t-primary rounded-full animate-spin"></div>
   </div>
 );
 
@@ -52,6 +55,7 @@ function App() {
           role: (userRec.role as UserRole) || 'STARTUP',
           startupId: startup?.projectId,
           startupName: startup?.name || '',
+          industry: startup?.industry || ''
         });
         setStage(FiltrationStage.DASHBOARD);
       }
@@ -61,6 +65,21 @@ function App() {
   useEffect(() => { hydrateSession(); }, [hydrateSession]);
 
   const handleLanguageChange = (newLang: Language) => setCurrentLang(newLang);
+
+  const renderDashboardByRole = () => {
+    if (!currentUser) return null;
+    
+    switch (currentUser.role) {
+      case 'ADMIN':
+        return <StaffPortal onBack={() => { storageService.logout(); setCurrentUser(null); setStage(FiltrationStage.LANDING); }} />;
+      case 'PARTNER':
+        return <CoFounderPortal user={currentUser} onBack={() => { storageService.logout(); setCurrentUser(null); setStage(FiltrationStage.LANDING); }} />;
+      case 'MENTOR':
+        return <MentorshipPage user={currentUser} onBack={() => { storageService.logout(); setCurrentUser(null); setStage(FiltrationStage.LANDING); }} />;
+      default:
+        return <DashboardHub lang={currentLang} user={currentUser} onLogout={() => { storageService.logout(); setCurrentUser(null); setStage(FiltrationStage.LANDING); }} />;
+    }
+  };
 
   const renderPage = () => {
     return (
@@ -74,7 +93,7 @@ function App() {
             case FiltrationStage.IMPACT:
               return <ImpactPage lang={currentLang} onBack={() => setStage(FiltrationStage.LANDING)} />;
             case FiltrationStage.DASHBOARD:
-              return currentUser ? <DashboardHub lang={currentLang} user={currentUser} onLogout={() => { storageService.logout(); setCurrentUser(null); setStage(FiltrationStage.LANDING); }} /> : null;
+              return renderDashboardByRole();
             case FiltrationStage.LOGIN:
               return <Login lang={currentLang} onLoginSuccess={hydrateSession} onBack={() => setStage(FiltrationStage.LANDING)} />;
             case FiltrationStage.WELCOME:
