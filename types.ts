@@ -2,9 +2,249 @@
 export type UserRole = 'STARTUP' | 'PARTNER' | 'MENTOR' | 'ADMIN';
 export type ProjectTrack = 'Idea' | 'Prototype' | 'Product' | 'MVP' | 'Growth' | 'Investment Ready';
 export type TaskStatus = 'LOCKED' | 'ASSIGNED' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+export type RiskLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 
 export type TicketType = 'INQUIRY' | 'COMPLAINT' | 'SUPPORT';
 export type TicketStatus = 'PENDING' | 'IN_PROGRESS' | 'RESOLVED';
+
+/* Fix for missing types */
+export type ProjectStageType = 'Idea' | 'Prototype' | 'Product';
+export type TechLevelType = 'Low' | 'Medium' | 'High';
+
+export interface ApplicantProfile {
+  codeName: string;
+  projectStage: ProjectStageType;
+  sector: string;
+  goal: string;
+  techLevel: TechLevelType;
+}
+
+export interface AnalyticalQuestion {
+  text: string;
+  options: string[];
+  correctIndex: number;
+  difficulty: string;
+}
+
+export interface ProjectEvaluationResult {
+  totalScore: number;
+  classification: 'Green' | 'Yellow' | 'Red';
+  clarity: number;
+  value: number;
+  innovation: number;
+  market: number;
+  readiness: number;
+  strengths: string[];
+  weaknesses: string[];
+  aiOpinion: string;
+}
+
+export interface NominationData {
+  companyName: string;
+  founderName: string;
+  location: string;
+  pitchDeckUrl: string;
+  hasCommercialRegister: 'YES' | 'NO' | 'IN_PROGRESS';
+  hasTechnicalPartner: boolean;
+  problemStatement: string;
+  targetCustomerType: string[];
+  marketSize: 'SMALL' | 'MEDIUM' | 'LARGE' | 'UNKNOWN';
+  whyNow: string;
+  productStage: 'IDEA' | 'PROTOTYPE' | 'MVP' | 'TRACTION';
+  topFeatures: string;
+  executionPlan: 'NONE' | 'GENERAL' | 'WEEKLY';
+  userCount: string;
+  revenueModel: 'NOT_SET' | 'SUBSCRIPTION' | 'COMMISSION' | 'ANNUAL' | 'PAY_PER_USE';
+  customerAcquisitionPath: string;
+  incubationReason: string;
+  weeklyHours: 'LESS_5' | '5-10' | '10-20' | '20+';
+  agreesToWeeklySession: boolean;
+  agreesToKPIs: boolean;
+  isCommitted10Hours: boolean;
+  currentResources: string[];
+  tractionEvidence: string[];
+  demoUrl?: string;
+}
+
+export interface NominationResult {
+  totalScore: number;
+  category: 'DIRECT_ADMISSION' | 'INTERVIEW' | 'PRE_INCUBATION' | 'REJECTION';
+  redFlags: string[];
+  aiAnalysis: string;
+}
+
+export type AgentCategory = 'Vision' | 'Market' | 'User' | 'Opportunity';
+
+export interface AIAgent {
+  id: string;
+  name: string;
+  category: AgentCategory;
+  description: string;
+}
+
+export const AVAILABLE_AGENTS: AIAgent[] = [
+  { id: 'v1', name: 'Strategic Architect', category: 'Vision', description: 'Defines long-term mission and core values.' },
+  { id: 'm1', name: 'Market Analyst', category: 'Market', description: 'Analyzes competitors and market trends.' },
+  { id: 'u1', name: 'User Researcher', category: 'User', description: 'Builds detailed user personas and empathy maps.' },
+  { id: 'o1', name: 'Growth Hacker', category: 'Opportunity', description: 'Identifies untapped growth channels.' },
+];
+
+export interface ProjectBuildData {
+  projectName: string;
+  description: string;
+  quality: 'Quick' | 'Balanced' | 'Enhanced' | 'Professional' | 'Max';
+  selectedAgents: string[];
+  results?: {
+    vision?: string;
+    marketAnalysis?: string;
+    userPersonas?: string;
+    hypotheses?: string[];
+    pitchDeck?: { title: string; content: string }[];
+  };
+}
+
+export interface FailureSimulation {
+  brutalTruth: string;
+  probability: number;
+  financialLoss: string;
+  operationalImpact: string;
+  missingQuestions: string[];
+  recoveryPlan: string[];
+}
+
+export interface GovStats {
+  riskyMarkets: { name: string; failRate: number }[];
+  readySectors: { name: string; score: number }[];
+  commonFailReasons: { reason: string; percentage: number }[];
+  regulatoryGaps: string[];
+}
+
+export interface TemplateField {
+  id: string;
+  label: string;
+  type: 'text' | 'textarea';
+  placeholder: string;
+  instruction: string;
+}
+
+export interface Template {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  role: UserRole[];
+  isMandatory: boolean;
+  fields: TemplateField[];
+  toolTipPurpose?: string;
+  toolTipLogic?: string;
+}
+
+export interface TemplateSubmission {
+  templateId: string;
+  data: Record<string, string>;
+  aiScore: number;
+  aiFeedback: string;
+  status: 'DRAFT' | 'APPROVED' | 'REVISION_REQUIRED';
+  updatedAt: string;
+}
+
+export const TEMPLATES_LIBRARY: Template[] = [
+  {
+    id: 'bmc',
+    title: 'Business Model Canvas',
+    description: 'Detailed structure for your business logic.',
+    icon: '🏗️',
+    role: ['STARTUP'],
+    isMandatory: true,
+    fields: [
+      { id: 'vp', label: 'Value Proposition', type: 'textarea', placeholder: 'What value do you deliver?', instruction: 'Be specific.' }
+    ],
+    toolTipPurpose: 'Define the core logic of how your business creates and captures value.',
+    toolTipLogic: 'Checks for consistency between customer segments and value props.'
+  },
+  {
+    id: 'lean',
+    title: 'Lean Canvas',
+    description: 'A 1-page business plan optimized for startups.',
+    icon: '📉',
+    role: ['STARTUP'],
+    isMandatory: true,
+    fields: [
+      { id: 'problem', label: 'Problem', type: 'textarea', placeholder: 'Top 3 problems you solve', instruction: 'List the actual pains.' },
+      { id: 'solution', label: 'Solution', type: 'textarea', placeholder: 'Top 3 features', instruction: 'Focus on the MVP.' }
+    ],
+    toolTipPurpose: 'Rapidly map out the key hypotheses of your business.',
+    toolTipLogic: 'Analyzes the problem-solution fit.'
+  },
+  {
+    id: 'swot',
+    title: 'SWOT Analysis',
+    description: 'Strategic internal and external audit.',
+    icon: '📊',
+    role: ['STARTUP', 'ADMIN'],
+    isMandatory: false,
+    fields: [
+      { id: 'strengths', label: 'Strengths', type: 'textarea', placeholder: 'Internal advantages', instruction: 'What makes you win?' },
+      { id: 'threats', label: 'Threats', type: 'textarea', placeholder: 'External risks', instruction: 'Competitors, market shifts.' }
+    ],
+    toolTipPurpose: 'Identify competitive advantages and critical vulnerabilities.',
+    toolTipLogic: 'Benchmarks internal power vs external pressure.'
+  }
+];
+
+export interface ProgramRating {
+  stars: number;
+  feedback: string;
+  favoriteFeature: string;
+  submittedAt: string;
+}
+
+export interface PersonalityQuestion {
+  id: number;
+  situation: string;
+  options: { text: string; style: string }[];
+}
+
+export interface RadarMetrics {
+  readiness: number;
+  analysis: number;
+  tech: number;
+  personality: number;
+  strategy: number;
+  ethics: number;
+}
+
+export interface FinalResult {
+  isQualified: boolean;
+  score: number;
+  leadershipStyle: string;
+  metrics: RadarMetrics;
+  badges: Badge[];
+  projectEval?: ProjectEvaluationResult;
+}
+
+export interface ActivityLogRecord {
+  id: string;
+  userId: string;
+  event: string;
+  type: string;
+  date: string;
+  score?: string;
+  color?: string;
+}
+
+export interface MentorProfile {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  specialty: string;
+  bio: string;
+  experience: number;
+  avatar: string;
+  rating: number;
+  tags: string[];
+}
 
 export interface SupportTicket {
   id: string;
@@ -23,6 +263,7 @@ export interface KPIRecord {
   growth: number;
   techReadiness: number;
   marketEngagement: number;
+  revenue?: number;
   burnRate?: number;
 }
 
@@ -69,7 +310,8 @@ export interface StartupRecord {
     tech: number;
     market: number;
   };
-  kpiHistory?: KPIRecord[];
+  kpiHistory: KPIRecord[];
+  riskLevel: RiskLevel;
   aiOpinion: string;
   aiClassification?: 'Green' | 'Yellow' | 'Red';
   currentLevel?: number;
@@ -124,6 +366,12 @@ export interface QuizQuestion {
   correctIndex: number;
 }
 
+export interface Resource {
+  title: string;
+  type: 'PDF' | 'VIDEO' | 'DOC' | 'LINK';
+  url: string;
+}
+
 export interface LevelData {
   id: number;
   title: string;
@@ -137,6 +385,7 @@ export interface LevelData {
   estimatedTime?: string;
   pillars?: LevelPillar[];
   quiz?: QuizQuestion[];
+  resources?: Resource[];
 }
 
 export const INITIAL_ROADMAP: LevelData[] = [
@@ -148,87 +397,103 @@ export const INITIAL_ROADMAP: LevelData[] = [
     imageUrl: 'https://images.unsplash.com/photo-1454165833767-13143891bb39?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'أزرق',
+    customColor: 'blue',
     complexity: 'Medium',
-    estimatedTime: '٤ دورات',
+    estimatedTime: '٤ ساعات',
     pillars: [
       { title: 'تحليل الفجوات', description: 'تحديد نقاط الضعف في الحلول الحالية.', icon: '🔍' },
       { title: 'هيكلة القيمة', description: 'صياغة العرض القيمي الجوهري.', icon: '💎' }
     ],
     quiz: [
       { question: "ما هو الهدف من اكتشاف العميل؟", options: ["البيع المباشر", "التحقق من الألم", "جمع التبرعات"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'دليل اكتشاف العميل', type: 'PDF', url: '#' },
+      { title: 'فيديو: صياغة المشكلة', type: 'VIDEO', url: '#' }
     ]
   },
   { 
     id: 2, 
     title: 'هيكلة نموذج العمل', 
     description: 'تصميم محرك الإيرادات والقيمة لضمان استدامة الكيان المؤسسي.', 
-    icon: '🏗️', 
+    icon: '📐', 
     imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'أخضر',
+    customColor: 'indigo',
     complexity: 'High',
-    estimatedTime: '٦ دورات',
+    estimatedTime: '٦ ساعات',
     pillars: [
-      { title: 'مخطط الـ BMC', description: 'رسم الهيكل التشغيلي والمالي.', icon: '📐' },
+      { title: 'مخطط الـ BMC', description: 'رسم الهيكل التشغيلي والمالي.', icon: '🏗️' },
       { title: 'مصادر الدخل', description: 'تحديد قنوات التدفقات النقدية.', icon: '💰' }
     ],
     quiz: [
       { question: "ما هي القيمة المقترحة (Value Prop)؟", options: ["قائمة ميزات المنتج", "الفائدة الجوهرية للعميل", "سعر المنتج"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'قالب نموذج العمل التجاري', type: 'DOC', url: '#' },
+      { title: 'ورشة عمل: قنوات الإيرادات', type: 'VIDEO', url: '#' }
     ]
   },
   { 
     id: 3, 
     title: 'هندسة المنتج (MVP)', 
     description: 'بناء النواة التقنية الأولى القابلة للاختبار الميداني السريع.', 
-    icon: '🧪', 
+    icon: '⚙️', 
     imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'بنفسجي',
+    customColor: 'emerald',
     complexity: 'Elite',
-    estimatedTime: '٨ دورات',
+    estimatedTime: '٨ ساعات',
     pillars: [
       { title: 'ترتيب الأولويات', description: 'اختيار الميزات الجوهرية فقط.', icon: '🎯' },
       { title: 'تجربة المستخدم', description: 'تصميم رحلة عميل سلسة.', icon: '📱' }
     ],
     quiz: [
       { question: "ما هو الـ MVP؟", options: ["النسخة الأرخص", "أصغر منتج قابل للتجربة وحل المشكلة", "النسخة النهائية الكاملة"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'دليل ترتيب ميزات المنتج', type: 'PDF', url: '#' },
+      { title: 'أدوات بناء النماذج السريعة', type: 'LINK', url: '#' }
     ]
   },
   { 
     id: 4, 
     title: 'تحليل الجدوى والنمو', 
-    description: 'دراسة التوسع ووضع خطط الاستحواذ عبر قنوات البث الرقمي.', 
-    icon: '📡', 
+    description: 'دراسة التوسع ووضع خطط الاستحواذ عبر قنوات البث الرقمي والنمو الفيروسي.', 
+    icon: '📈', 
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'وردي',
+    customColor: 'amber',
     complexity: 'Medium',
-    estimatedTime: '٥ دورات',
+    estimatedTime: '٥ ساعات',
     pillars: [
       { title: 'اقتصاديات الوحدة', description: 'حساب الـ CAC والـ LTV لكل عميل.', icon: '📊' },
-      { title: 'قنوات الاستحواذ', description: 'تحديد أفضل طرق الوصول للجمهور.', icon: '🚀' },
+      { title: 'قنوات الاستحواذ', description: 'تحديد أفضل طرق الوصول للجمهور.', icon: '📡' },
       { title: 'النمو الفيروسي', description: 'تصميم محركات الانتشار التلقائي.', icon: '🧬' }
     ],
     quiz: [
       { question: "ماذا يمثل الـ TAM؟", options: ["إجمالي السوق المتاح", "السوق المستهدف فعلياً", "عدد الموظفين"], correctIndex: 0 },
       { question: "ما هي النسبة الصحية المثالية بين LTV و CAC؟", options: ["1:1", "3:1", "1:3"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'حاسبة اقتصاديات الوحدة', type: 'LINK', url: '#' },
+      { title: 'استراتيجيات النمو الرقمي', type: 'PDF', url: '#' }
     ]
   },
   { 
     id: 5, 
     title: 'النمذجة المالية', 
-    description: 'تأمين القيمة المالية الدقيقة وجاهزية التدفقات النقدية الاستراتيجية.', 
-    icon: '💎', 
+    description: 'تأمين القيمة المالية الدقيقة وجاهزية التدفقات النقدية الاستراتيجية لمدة ٣ سنوات.', 
+    icon: '📊', 
     imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'ذهبي',
+    customColor: 'orange',
     complexity: 'High',
-    estimatedTime: '٦ دورات',
+    estimatedTime: '٦ ساعات',
     pillars: [
       { title: 'قائمة الدخل التقديرية', description: 'توقع الأرباح والخسائر لـ ٣ سنوات.', icon: '📊' },
       { title: 'إدارة السيولة (Cash Flow)', description: 'مراقبة الداخل والخارج من النقد.', icon: '💧' },
@@ -237,19 +502,23 @@ export const INITIAL_ROADMAP: LevelData[] = [
     quiz: [
       { question: "ما هو معدل الحرق (Burn Rate)؟", options: ["سرعة إنفاق السيولة شهرياً", "معدل زيادة العملاء", "تكلفة المنتج"], correctIndex: 0 },
       { question: "متى يصل المشروع لنقطة التعادل؟", options: ["عند الحصول على استثمار", "عندما تساوي الإيرادات إجمالي التكاليف", "عند إطلاق النسخة الأولى"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'نموذج التوقعات المالية (Excel)', type: 'DOC', url: '#' },
+      { title: 'فيديو: إدارة التدفق النقدي', type: 'VIDEO', url: '#' }
     ]
   },
   { 
     id: 6, 
     title: 'جاهزية الاستثمار', 
-    description: 'صياغة العرض المؤسسي النهائي والتحضير للجان الاستثمار VC.', 
-    icon: '🏛️', 
+    description: 'صياغة العرض المؤسسي النهائي والتحضير للجان الاستثمار VC وهيكلة الحصص.', 
+    icon: '💎', 
     imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'سحابي',
+    customColor: 'rose',
     complexity: 'Elite',
-    estimatedTime: '٧ دورات',
+    estimatedTime: '٧ ساعات',
     pillars: [
       { title: 'العرض الاستثماري (Pitch)', description: 'تصميم Pitch Deck احترافي ومقنع.', icon: '📽️' },
       { title: 'هيكلة الحصص (Cap Table)', description: 'توزيع الملكية وتخطيط جولات التمويل.', icon: '📉' },
@@ -258,6 +527,10 @@ export const INITIAL_ROADMAP: LevelData[] = [
     quiz: [
       { question: "ما هو الـ Term Sheet؟", options: ["عقد توظيف", "مذكرة شروط الاستثمار الأساسية", "فاتورة ضريبية"], correctIndex: 1 },
       { question: "ما هو الـ Valuation؟", options: ["عدد الأسهم", "تقييم القيمة المالية للشركة", "ميزانية التسويق"], correctIndex: 1 }
+    ],
+    resources: [
+      { title: 'قالب عرض استثماري (Pitch Deck)', type: 'DOC', url: '#' },
+      { title: 'دليل هيكلة الحصص', type: 'PDF', url: '#' }
     ]
   }
 ];
@@ -320,11 +593,11 @@ export const SECTORS = [
 ];
 
 export const ACADEMY_BADGES: Badge[] = [
-  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '🛰️', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
-  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '🏗️', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' },
+  { id: 'b1', name: 'وسام التحقق', levelId: 1, icon: '📡', description: 'تم اجتياز مرحلة التحقق الاستراتيجي', color: 'from-blue-500 to-indigo-500' },
+  { id: 'b2', name: 'وسام نموذج العمل', levelId: 2, icon: '📐', description: 'تم اجتياز مرحلة هيكلة نموذج العمل', color: 'from-emerald-500 to-teal-500' },
   { id: 'b3', name: 'وسام التميز التقني', levelId: 3, icon: '🧪', description: 'تم بناء النسخة التجريبية للمنتج', color: 'from-indigo-500 to-purple-500' },
-  { id: 'b4', name: 'وسام النمو السريع', levelId: 4, icon: '📡', description: 'تم التحقق من قابلية التوسع', color: 'from-amber-500 to-orange-500' },
-  { id: 'b5', name: 'وسام الملاءة المالية', levelId: 5, icon: '💎', description: 'تم إتمام النمذجة المالية بنجاح', color: 'from-rose-500 to-pink-500' },
+  { id: 'b4', name: 'وسام النمو السريع', levelId: 4, icon: '🚀', description: 'تم التحقق من قابلية التوسع', color: 'from-amber-500 to-orange-500' },
+  { id: 'b5', name: 'وسام الملاءة المالية', levelId: 5, icon: '💰', description: 'تم إتمام النمذجة المالية بنجاح', color: 'from-rose-500 to-pink-500' },
   { id: 'b6', name: 'وسام النخبة الاستثمارية', levelId: 6, icon: '🏛️', description: 'المشروع جاهز كلياً للاستثمار', color: 'from-slate-600 to-slate-800' }
 ];
 
@@ -422,260 +695,6 @@ export interface OpportunityAnalysis {
   newMarkets: { region: string; reasoning: string; potentialROI: string }[];
   blueOceanIdea: string;
 }
-
-export interface ProgramRating {
-  stars: number;
-  feedback: string;
-  favoriteFeature: string;
-  submittedAt: string;
-}
-
-export type ProjectStageType = 'Idea' | 'Prototype' | 'Product';
-export type TechLevelType = 'Low' | 'Medium' | 'High';
-
-export interface ApplicantProfile {
-  codeName: string;
-  projectStage: ProjectStageType;
-  sector: string;
-  goal: string;
-  techLevel: TechLevelType;
-}
-
-export interface PersonalityQuestion {
-  id: number;
-  situation: string;
-  options: { text: string; style: string }[];
-}
-
-export interface AnalyticalQuestion {
-  text: string;
-  options: string[];
-  correctIndex: number;
-  difficulty: string;
-}
-
-export interface RadarMetrics {
-  readiness: number;
-  analysis: number;
-  tech: number;
-  personality: number;
-  strategy: number;
-  ethics: number;
-}
-
-export interface FinalResult {
-  score: number;
-  isQualified: boolean;
-  metrics: RadarMetrics;
-  leadershipStyle: string;
-  badges: Badge[];
-  projectEval?: ProjectEvaluationResult;
-}
-
-export interface ProjectEvaluationResult {
-  totalScore: number;
-  classification: 'Green' | 'Yellow' | 'Red';
-  clarity: number;
-  value: number;
-  innovation: number;
-  market: number;
-  readiness: number;
-  strengths: string[];
-  weaknesses: string[];
-  aiOpinion: string;
-}
-
-export type AgentCategory = 'Vision' | 'Market' | 'User' | 'Opportunity';
-
-export interface AIAgent {
-  id: string;
-  name: string;
-  category: AgentCategory;
-  description: string;
-}
-
-export interface ProjectBuildData {
-  projectName: string;
-  description: string;
-  quality: 'Quick' | 'Balanced' | 'Enhanced' | 'Professional' | 'Max';
-  selectedAgents: string[];
-  results?: {
-    vision?: string;
-    marketAnalysis?: string;
-    userPersonas?: string;
-    hypotheses?: string[];
-    pitchDeck?: { title: string; content: string }[];
-  };
-}
-
-export const AVAILABLE_AGENTS: AIAgent[] = [
-  { id: 'v1', name: 'محلل الرؤية', category: 'Vision', description: 'يصيغ الرؤية الاستراتيجية للمشروع.' },
-  { id: 'm1', name: 'خبير السوق', category: 'Market', description: 'يحلل اتجاهات السوق وحجم الفرص.' },
-  { id: 'u1', name: 'مصمم الفئات', category: 'User', description: 'يحدد شرائح المستخدمين المستهدفة.' },
-  { id: 'o1', name: 'كاشف الفرص', category: 'Opportunity', description: 'يستكشف الفجوات البيضاء في المنافسة.' },
-];
-
-export interface FailureSimulation {
-  brutalTruth: string;
-  probability: number;
-  financialLoss: string;
-  operationalImpact: string;
-  missingQuestions: string[];
-  recoveryPlan: string[];
-}
-
-export interface GovStats {
-  riskyMarkets: { name: string; failRate: number }[];
-  readySectors: { name: string; score: number }[];
-  commonFailReasons: { reason: string; percentage: number }[];
-  regulatoryGaps: string[];
-}
-
-export interface ActivityLogRecord {
-  id: string;
-  event: string;
-  type: string;
-  date: string;
-  score?: string;
-  color: string;
-}
-
-export interface NominationData {
-  companyName: string;
-  founderName: string;
-  location: string;
-  pitchDeckUrl: string;
-  hasCommercialRegister: 'YES' | 'NO' | 'IN_PROGRESS';
-  hasTechnicalPartner: boolean;
-  problemStatement: string;
-  targetCustomerType: string[];
-  marketSize: 'SMALL' | 'MEDIUM' | 'LARGE' | 'UNKNOWN';
-  whyNow: string;
-  productStage: 'IDEA' | 'PROTOTYPE' | 'MVP' | 'TRACTION';
-  topFeatures: string;
-  executionPlan: 'NONE' | 'GENERAL' | 'WEEKLY';
-  userCount: string;
-  revenueModel: 'NOT_SET' | 'SUBSCRIPTION' | 'COMMISSION' | 'ANNUAL' | 'PAY_PER_USE';
-  customerAcquisitionPath: string;
-  incubationReason: string;
-  weeklyHours: 'LESS_5' | '5-10' | '10-20' | '20+';
-  agreesToWeeklySession: boolean;
-  agreesToKPIs: boolean;
-  isCommitted10Hours: boolean;
-  demoUrl?: string;
-  currentResources?: string[];
-  tractionEvidence?: string[];
-}
-
-export interface NominationResult {
-  totalScore: number;
-  category: 'DIRECT_ADMISSION' | 'INTERVIEW' | 'PRE_INCUBATION' | 'REJECTION';
-  redFlags: string[];
-  aiAnalysis: string;
-}
-
-export interface MentorProfile {
-  id: string;
-  name: string;
-  role: string;
-  company: string;
-  specialty: 'Tech' | 'Finance' | 'Growth' | 'Legal' | 'Strategy';
-  bio: string;
-  experience: number;
-  avatar: string;
-  rating: number;
-  tags: string[];
-}
-
-export interface TemplateField {
-  id: string;
-  label: string;
-  type: 'text' | 'textarea' | 'number';
-  placeholder: string;
-  instruction: string;
-}
-
-export interface Template {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  isMandatory: boolean;
-  role: UserRole[];
-  fields: TemplateField[];
-  toolTipPurpose?: string;
-  toolTipLogic?: string;
-}
-
-export interface TemplateSubmission {
-  templateId: string;
-  data: Record<string, string>;
-  aiScore: number;
-  aiFeedback: string;
-  status: 'DRAFT' | 'APPROVED' | 'REVISION_REQUIRED';
-  updatedAt: string;
-}
-
-export const TEMPLATES_LIBRARY: Template[] = [
-  {
-    id: 't1',
-    title: 'مصفوفة الـ SWOT',
-    description: 'تحليل نقاط القوة والضعف والفرص والتهديدات للمشروع.',
-    icon: '📊',
-    isMandatory: true,
-    role: ['STARTUP'],
-    toolTipPurpose: 'فهم العوامل الداخلية والخارجية التي تؤثر على استمرارية مشروعك.',
-    toolTipLogic: 'محرك Gemini يحلل الترابط بين الفرص ونقاط القوة لتعظيم الأثر.',
-    fields: [
-      { id: 'strengths', label: 'نقاط القوة', type: 'textarea', placeholder: 'مثال: فريق تقني خبير', instruction: 'اذكر المزايا التنافسية الداخلية.' },
-      { id: 'weaknesses', label: 'نقاط الضعف', type: 'textarea', placeholder: 'مثال: نقص التمويل الحالي', instruction: 'اذكر الثغرات التي تحتاج معالجة.' }
-    ]
-  },
-  {
-    id: 't2',
-    title: 'مخطط نموذج العمل (BMC)',
-    description: 'الهيكل الكامل لكيفية خلق القيمة وتحقيق الإيرادات.',
-    icon: '🏗️',
-    isMandatory: true,
-    role: ['STARTUP'],
-    toolTipPurpose: 'رسم خريطة طريق لكيفية عمل الشركة وتحويل القيمة إلى أرباح.',
-    toolTipLogic: 'يتم فحص التوافق بين "شرائح العملاء" و"القيمة المقترحة" لضمان الملاءمة.',
-    fields: [
-      { id: 'vp', label: 'القيمة المقترحة', type: 'textarea', placeholder: 'ما الذي يجعل حلك فريداً؟', instruction: 'ركز على الفوائد لا الميزات.' },
-      { id: 'segments', label: 'شرائح العملاء', type: 'textarea', placeholder: 'من هم عملاؤك بدقة؟', instruction: 'حدد الفئات الديموغرافية والسلوكية.' },
-      { id: 'revenue', label: 'مصادر الإيرادات', type: 'textarea', placeholder: 'كيف ستجني المال؟', instruction: 'حدد نماذج التسعير (اشتراك، عمولة، إلخ).' }
-    ]
-  },
-  {
-    id: 't3',
-    title: 'هيكل العرض الاستثماري',
-    description: 'تجهيز الشرائح الأساسية لإقناع المستثمرين بالتمويل.',
-    icon: '💎',
-    isMandatory: false,
-    role: ['STARTUP'],
-    toolTipPurpose: 'بناء قصة مقنعة ومختصرة تجذب انتباه رؤوس الأموال الجريئة.',
-    toolTipLogic: 'يتم تقييم قوة "المشكلة" وجاذبية "حجم السوق" وفق معايير الـ VC.',
-    fields: [
-      { id: 'problem_slide', label: 'شريحة المشكلة', type: 'textarea', placeholder: 'وصف الألم السوقي...', instruction: 'اجعلها عاطفية ومدعومة بأرقام.' },
-      { id: 'solution_slide', label: 'شريحة الحل', type: 'textarea', placeholder: 'كيف ينهي منتجك المعاناة؟', instruction: 'بساطة العرض هي السر.' },
-      { id: 'ask', label: 'شريحة الطلب (The Ask)', type: 'textarea', placeholder: 'كم تحتاج من تمويل؟', instruction: 'حدد المبلغ وكيفية صرفه.' }
-    ]
-  },
-  {
-    id: 't4',
-    title: 'التوقعات المالية التقديرية',
-    description: 'دراسة مبدئية للإيرادات والمصاريف المتوقعة لـ ١٢ شهر.',
-    icon: '💹',
-    isMandatory: true,
-    role: ['STARTUP'],
-    toolTipPurpose: 'التنبؤ بالاحتياجات المالية ونقطة التعادل (Break-even).',
-    toolTipLogic: 'خوارزمية التحليل المالي تتأكد من منطقية هوامش الربح وتكاليف الاستحواذ.',
-    fields: [
-      { id: 'cac', label: 'تكلفة الاستحواذ (CAC)', type: 'number', placeholder: 'كم يكلف جذب عميل واحد؟', instruction: 'تقدير ميزانية التسويق مقسومة على العملاء.' },
-      { id: 'burn', label: 'معدل الحرق الشهري', type: 'number', placeholder: 'إجمالي المصاريف الشهرية الثابتة', instruction: 'رواتب، إيجار، تقنية...' }
-    ]
-  }
-];
 
 export interface PartnershipRequest {
   id: string;

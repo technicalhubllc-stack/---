@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { LevelData, UserProfile, DIGITAL_SHIELDS, SECTORS, TaskRecord, SERVICES_CATALOG, ServiceItem, ServicePackage, ServiceRequest, OpportunityAnalysis, ProgramRating, Partner } from '../types';
 import { storageService } from '../services/storageService';
@@ -21,14 +22,14 @@ interface DashboardProps {
 }
 
 const PRESET_COLORS = [
-  { name: 'أزرق', bg: 'bg-blue-600', text: 'text-blue-600', border: 'border-blue-600', light: 'bg-blue-50', ring: 'ring-blue-500' },
-  { name: 'أخضر', bg: 'bg-emerald-600', text: 'text-emerald-600', border: 'border-emerald-600', light: 'bg-emerald-50', ring: 'ring-emerald-500' },
-  { name: 'أحمر', bg: 'bg-rose-600', text: 'text-rose-600', border: 'border-rose-600', light: 'bg-rose-50', ring: 'ring-rose-500' },
-  { name: 'بنفسجي', bg: 'bg-indigo-600', text: 'text-indigo-600', border: 'border-indigo-600', light: 'bg-indigo-50', ring: 'ring-indigo-500' },
-  { name: 'برتقالي', bg: 'bg-orange-500', text: 'text-orange-500', border: 'border-orange-500', light: 'bg-orange-50', ring: 'ring-orange-500' },
-  { name: 'ذهبي', bg: 'bg-amber-500', text: 'text-amber-500', border: 'border-amber-500', light: 'bg-amber-50', ring: 'ring-amber-500' },
-  { name: 'وردي', bg: 'bg-pink-600', text: 'text-pink-600', border: 'border-pink-600', light: 'bg-pink-50', ring: 'ring-pink-500' },
-  { name: 'سحابي', bg: 'bg-slate-500', text: 'text-slate-500', border: 'border-slate-500', light: 'bg-slate-50', ring: 'ring-slate-500' },
+  { name: 'blue', bg: 'bg-blue-600', text: 'text-blue-600', border: 'border-blue-600', light: 'bg-blue-50', ring: 'ring-blue-500' },
+  { name: 'emerald', bg: 'bg-emerald-600', text: 'text-emerald-600', border: 'border-emerald-600', light: 'bg-emerald-50', ring: 'ring-emerald-500' },
+  { name: 'rose', bg: 'bg-rose-600', text: 'text-rose-600', border: 'border-rose-600', light: 'bg-rose-50', ring: 'ring-rose-500' },
+  { name: 'indigo', bg: 'bg-indigo-600', text: 'text-indigo-600', border: 'border-indigo-600', light: 'bg-indigo-50', ring: 'ring-indigo-500' },
+  { name: 'orange', bg: 'bg-orange-500', text: 'text-orange-500', border: 'border-orange-500', light: 'bg-orange-50', ring: 'ring-orange-500' },
+  { name: 'amber', bg: 'bg-amber-500', text: 'text-amber-500', border: 'border-amber-500', light: 'bg-amber-50', ring: 'ring-amber-500' },
+  { name: 'pink', bg: 'bg-pink-600', text: 'text-pink-600', border: 'border-pink-600', light: 'bg-pink-50', ring: 'ring-pink-500' },
+  { name: 'slate', bg: 'bg-slate-500', text: 'text-slate-500', border: 'border-slate-500', light: 'bg-slate-50', ring: 'ring-slate-500' },
 ];
 
 export const Dashboard: React.FC<DashboardProps> = ({ 
@@ -241,7 +242,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         const updatedLevels = localLevels.map(lvl => {
           const suggestion = suggestions.suggestions.find((s: any) => s.id === lvl.id);
           if (suggestion) {
-            return { ...lvl, icon: suggestion.icon, customColor: suggestion.color };
+            return { ...lvl, icon: suggestion.icon, customColor: suggestion.color.toLowerCase() };
           }
           return lvl;
         });
@@ -261,7 +262,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   const getLevelColorSet = (colorName?: string) => {
-    return PRESET_COLORS.find(c => c.name === colorName) || PRESET_COLORS[0];
+    const normalizedColor = (colorName || 'blue').toLowerCase();
+    return PRESET_COLORS.find(c => c.name === normalizedColor) || PRESET_COLORS[0];
   };
 
   const getTaskForLevel = (levelId: number) => {
@@ -288,6 +290,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
   };
 
+  const getComplexityBadge = (complexity?: string) => {
+    switch(complexity) {
+      case 'Elite': return <span className="bg-saudi-black text-white px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-white/20">Elite Challenge</span>;
+      case 'High': return <span className="bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-rose-500/20">High Complexity</span>;
+      case 'Medium': return <span className="bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border border-blue-500/20">Strategic Mid</span>;
+      default: return null;
+    }
+  };
+
   return (
     <div className={`min-h-screen flex ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'} font-sans transition-colors duration-500`} dir={t.dir}>
       <style>{`
@@ -298,6 +309,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         .card-neo:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); }
         .input-profile { width: 100%; padding: 1rem; border-radius: 1rem; border: 1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}; background: ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'}; outline: none; transition: all 0.3s; font-weight: bold; }
         .input-profile:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); background: ${isDark ? 'rgba(255,255,255,0.05)' : 'white'}; }
+        .progress-glow { box-shadow: 0 0 10px rgba(37, 99, 235, 0.4); }
       `}</style>
 
       {/* Floating Modern Sidebar */}
@@ -359,7 +371,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
            </div>
            <div className="flex items-center gap-4">
               {activeNav === 'startup_profile' && (
-                <button onClick={handleSaveProfile} disabled={isSaving} className="bg-blue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
+                <button onClick={handleSaveProfile} disabled={isSaving} className="bg-Saudiblue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-600/30 active:scale-95 transition-all hover:bg-blue-700">
                   {isSaving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
                 </button>
               )}
@@ -369,7 +381,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {isAISuggesting ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : '✨'}
                     <span>تحديث الأيقونات (AI)</span>
                   </button>
-                  <button onClick={onOpenProAnalytics} className="bg-blue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all hover:bg-blue-700">تحليلات PRO</button>
+                  <button onClick={onOpenProAnalytics} className="bg-Saudiblue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all hover:bg-blue-700">تحليلات PRO</button>
                  </>
               )}
               {activeNav === 'tasks' && (
@@ -386,11 +398,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                    <div className="p-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[3.5rem] text-white premium-shadow relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000"></div>
+                      <div className="absolute top-0 right-0 w-64 h-64 bg- Saudiwhite/10 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-1000"></div>
                       <p className="text-[11px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">إنجاز المسار التدريبي</p>
                       <h3 className="text-6xl font-black tracking-tighter">{Math.round(progress)}%</h3>
-                      <div className="mt-10 bg-white/20 h-2.5 rounded-full overflow-hidden shadow-inner">
-                        <div className="bg-white h-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
+                      <div className="mt-10 bg-Saudiwhite/20 h-2.5 rounded-full overflow-hidden shadow-inner">
+                        <div className="bg-Saudiwhite h-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
                       </div>
                    </div>
                    <div className={`p-10 rounded-[3.5rem] card-neo flex flex-col justify-between`}>
@@ -424,47 +436,57 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             <div 
                               key={level.id} 
                               onClick={() => !level.isLocked && onSelectLevel(level.id)} 
-                              className={`p-8 flex items-center justify-between transition-all duration-300 ${level.isLocked ? 'opacity-40 grayscale cursor-not-allowed' : 'cursor-pointer hover:bg-blue-600/[0.03]'} group`}
+                              className={`p-10 flex flex-col md:flex-row items-center justify-between transition-all duration-300 ${level.isLocked ? 'opacity-40 grayscale cursor-not-allowed' : 'cursor-pointer hover:bg-blue-600/[0.03]'} group`}
                             >
                                <div className="flex items-center gap-8 flex-1 min-w-0">
-                                  <div className={`w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-4xl shrink-0 transition-all premium-shadow ${level.isCompleted ? (colorSet.bg) + ' text-white' : (level.isLocked ? (isDark ? 'bg-slate-800 text-slate-600' : 'bg-slate-100 text-slate-300') : colorSet.light + ' ' + colorSet.text)} group-hover:scale-110 group-hover:rotate-3`}>
+                                  <div className={`w-20 h-20 rounded-[2.2rem] flex items-center justify-center text-5xl shrink-0 transition-all premium-shadow ${level.isCompleted ? (colorSet.bg) + ' text-white' : (level.isLocked ? (isDark ? 'bg-slate-800 text-slate-600' : 'bg-slate-100 text-slate-300') : colorSet.light + ' ' + colorSet.text)} group-hover:scale-110 group-hover:rotate-3`}>
                                      {level.isCompleted ? '✓' : level.icon}
                                   </div>
                                   <div className="flex-1 truncate">
-                                    <div className="flex items-center gap-3">
-                                      <span className={`text-[9px] font-black uppercase tracking-widest ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>LEVEL 0{level.id}</span>
-                                      <h4 className={`font-black text-xl transition-colors ${!level.isLocked ? 'group-hover:' + colorSet.text : ''}`}>
-                                        {level.title}
-                                      </h4>
+                                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                                      <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Phase 0{level.id}</span>
+                                      {getComplexityBadge(level.complexity)}
+                                      {level.estimatedTime && <span className="bg-slate-100 dark:bg-white/5 text-slate-500 px-3 py-0.5 rounded-lg text-[8px] font-bold uppercase tracking-widest border border-slate-200 dark:border-white/10 italic">Est: {level.estimatedTime}</span>}
                                       {getStatusBadge(levelTask)}
                                     </div>
-                                    <p className="text-sm text-slate-500 font-medium truncate mt-1 opacity-80">{level.description}</p>
                                     
-                                    {/* Level-specific progress indicator */}
-                                    <div className="mt-4 max-w-[200px] space-y-1.5">
-                                      <div className="flex justify-between items-center text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                        <span>تقدم المستوى</span>
-                                        <span>{level.isCompleted ? '100%' : '0%'}</span>
+                                    <h4 className={`font-black text-2xl transition-colors ${!level.isLocked ? 'group-hover:' + colorSet.text : ''}`}>
+                                      {level.title}
+                                    </h4>
+                                    <p className="text-sm text-slate-500 font-medium truncate mt-2 opacity-80">{level.description}</p>
+                                    
+                                    {/* Detailed Visual Progress Indicator */}
+                                    <div className="mt-6 max-w-md space-y-2">
+                                      <div className="flex justify-between items-center">
+                                         <div className="flex gap-1.5">
+                                            {[...Array(5)].map((_, i) => (
+                                              <div key={i} className={`w-3 h-1 rounded-full ${level.isCompleted ? 'bg-saudi-green' : (i < 2 && !level.isLocked ? colorSet.bg : 'bg-slate-200 dark:bg-white/5')}`}></div>
+                                            ))}
+                                         </div>
+                                         <span className={`text-[10px] font-black uppercase tracking-widest ${level.isCompleted ? 'text-saudi-green' : 'text-slate-400'}`}>
+                                            {level.isCompleted ? 'Verified & Completed' : (level.isLocked ? 'Locked' : 'Action Required')}
+                                         </span>
                                       </div>
-                                      <div className="h-1 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                      <div className="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden shadow-inner">
                                         <div 
-                                          className={`h-full transition-all duration-1000 ease-out ${level.isCompleted ? 'bg-emerald-500' : 'bg-blue-600/30'}`} 
-                                          style={{ width: level.isCompleted ? '100%' : '0%' }}
+                                          className={`h-full transition-all duration-1000 ease-out progress-glow ${level.isCompleted ? 'bg-saudi-green' : colorSet.bg}`} 
+                                          style={{ width: level.isCompleted ? '100%' : (level.isLocked ? '0%' : '15%') }}
                                         ></div>
                                       </div>
                                     </div>
                                   </div>
                                </div>
-                               <div className="flex items-center gap-6 shrink-0 px-6">
+
+                               <div className="flex items-center gap-6 shrink-0 mt-8 md:mt-0 px-6">
                                   {level.isLocked ? (
-                                    <div className={`flex items-center gap-3 px-5 py-3 rounded-2xl border ${isDark ? 'bg-slate-900 border-white/5 text-slate-600' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
-                                        <span className="text-xs">🔒</span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest">مغلق حالياً</span>
+                                    <div className={`flex items-center gap-3 px-6 py-4 rounded-[1.5rem] border ${isDark ? 'bg-slate-900 border-white/5 text-slate-600' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                                        <span className="text-sm">🔒</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Protocol Encrypted</span>
                                     </div>
                                   ) : (
-                                    <div className={`flex items-center gap-3 px-8 py-3.5 rounded-2xl border transition-all duration-300 ${level.isCompleted ? 'bg-emerald-500 text-white border-emerald-500 shadow-xl shadow-emerald-500/20' : 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1'}`}>
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{level.isCompleted ? 'مكتمل' : 'دخول المحطة'}</span>
-                                        <span className="text-xl leading-none">{level.isCompleted ? '✓' : '→'}</span>
+                                    <div className={`flex items-center gap-4 px-10 py-5 rounded-[1.8rem] border transition-all duration-500 ${level.isCompleted ? 'bg-saudi-green text-white border-saudi-green shadow-2xl shadow-saudi-green/20' : colorSet.bg + ' text-white border-transparent shadow-2xl shadow-blue-600/30 hover:brightness-110 hover:-translate-y-1'}`}>
+                                        <span className="text-xs font-black uppercase tracking-widest">{level.isCompleted ? 'مراجعة المخرجات' : 'دخول التنفيذ الآن'}</span>
+                                        <span className="text-2xl leading-none transition-transform group-hover:translate-x-[-4px]">{level.isCompleted ? '✓' : '→'}</span>
                                     </div>
                                   )}
                                </div>
@@ -807,77 +829,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                </div>
                <div className="flex gap-4 mt-10">
                   <button onClick={() => setShowAddTaskModal(false)} className="flex-1 py-5 font-black text-slate-400 hover:text-slate-600 transition-colors">إلغاء</button>
-                  <button onClick={handleAddCustomTask} className="flex-[2] py-5 bg-emerald-600 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-emerald-500/30 active:scale-95 transition-all hover:bg-emerald-700">حفظ المهمة</button>
-               </div>
-            </div>
-          </div>
-        )}
-
-        {selectedService && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fade-in" dir="rtl">
-            <div className={`max-w-4xl w-full p-10 md:p-14 rounded-[4rem] ${isDark ? 'bg-slate-900 border border-white/5 text-white' : 'bg-white shadow-2xl text-slate-900'} animate-fade-in-up overflow-y-auto max-h-[90vh]`}>
-               <div className="flex justify-between items-start mb-12">
-                  <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center text-4xl shadow-xl text-white">{selectedService.icon}</div>
-                    <div>
-                      <h3 className="text-3xl font-black tracking-tight">{selectedService.title}</h3>
-                      <p className="text-blue-500 text-[10px] font-black uppercase tracking-widest mt-1">Premium Execution Services</p>
-                    </div>
-                  </div>
-                  <button onClick={() => { setSelectedService(null); setSelectedPackageId(null); setServiceDetails(''); }} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors text-2xl">✕</button>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                  {selectedService.packages.map(pkg => (
-                    <button 
-                      key={pkg.id} 
-                      onClick={() => setSelectedPackageId(pkg.id)}
-                      className={`p-8 rounded-[2.5rem] border-4 text-right transition-all duration-300 relative group
-                        ${selectedPackageId === pkg.id 
-                          ? 'bg-blue-600 border-blue-600 text-white shadow-2xl shadow-blue-500/20' 
-                          : (isDark ? 'bg-white/5 border-white/5 hover:border-blue-500/50' : 'bg-slate-50 border-slate-100 hover:border-blue-500/50')}
-                      `}
-                    >
-                      <div className="flex justify-between items-start mb-6">
-                         <h4 className="text-2xl font-black">{pkg.name}</h4>
-                         <span className={`text-xl font-black ${selectedPackageId === pkg.id ? 'text-white' : 'text-blue-600'}`}>{pkg.price}</span>
-                      </div>
-                      <ul className="space-y-3 mb-4">
-                         {pkg.features.map((f, i) => (
-                           <li key={i} className={`text-sm font-bold flex items-center gap-3 ${selectedPackageId === pkg.id ? 'text-blue-50' : 'text-slate-500'}`}>
-                             <span className={`w-1.5 h-1.5 rounded-full ${selectedPackageId === pkg.id ? 'bg-white' : 'bg-blue-500'}`}></span>
-                             {f}
-                           </li>
-                         ))}
-                      </ul>
-                      {selectedPackageId === pkg.id && (
-                        <div className="absolute -top-3 -right-3 w-8 h-8 bg-white text-blue-600 rounded-full flex items-center justify-center text-lg shadow-lg">✓</div>
-                      )}
-                    </button>
-                  ))}
-               </div>
-
-               <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pr-2">تفاصيل إضافية أو متطلبات خاصة:</label>
-                  <textarea 
-                    className={`w-full h-32 p-6 rounded-[2rem] border outline-none font-medium resize-none transition-all
-                      ${isDark ? 'bg-white/5 border-white/10 focus:border-blue-500' : 'bg-slate-50 border-slate-100 focus:border-blue-500'}
-                    `}
-                    placeholder="اكتب هنا أي تفاصيل تود مشاركتها مع فريق التنفيذ..."
-                    value={serviceDetails}
-                    onChange={e => setServiceDetails(e.target.value)}
-                  />
-               </div>
-
-               <div className="flex gap-4 mt-12">
-                  <button onClick={() => { setSelectedService(null); setSelectedPackageId(null); setServiceDetails(''); }} className="flex-1 py-6 font-black text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest text-xs">إلغاء الطلب</button>
-                  <button 
-                    onClick={handleServiceRequestSubmit} 
-                    disabled={!selectedPackageId} 
-                    className="flex-[2] py-6 bg-blue-600 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-blue-500/30 disabled:opacity-30 active:scale-95 transition-all hover:bg-blue-700"
-                  >
-                    تأكيد وإرسال طلب التنفيذ 🚀
-                  </button>
+                  <button onClick={handleAddCustomTask} className="flex-[2] py-5 bg-emerald-600 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-emerald-600/30 active:scale-95 transition-all hover:bg-emerald-700">حفظ المهمة</button>
                </div>
             </div>
           </div>

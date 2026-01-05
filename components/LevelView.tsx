@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { LevelData, UserProfile, TaskRecord, ACADEMY_BADGES } from '../types';
+import { LevelData, UserProfile, TaskRecord, ACADEMY_BADGES, Resource } from '../types';
 import { playPositiveSound, playCelebrationSound } from '../services/audioService';
 import { storageService } from '../services/storageService';
 import { reviewDeliverableAI } from '../services/geminiService';
@@ -33,11 +34,9 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
       reader.onload = async () => {
         const fileData = reader.result as string;
         
-        // AI Review Logic
         const context = `Startup: ${user.startupName}, Industry: ${user.industry}, Level: ${level.title}`;
         const review = await reviewDeliverableAI(currentTask.title, currentTask.description, context);
         
-        // Normalize the score to a percentage if it's missing (Gemini sometimes returns different shapes)
         const finalScore = review.readinessScore || review.score || Math.floor(Math.random() * 20) + 80;
         const processedReview = { ...review, score: finalScore };
 
@@ -61,6 +60,25 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
     }
   };
 
+  const getResourceIcon = (type: Resource['type']) => {
+    switch (type) {
+      case 'PDF': return '📄';
+      case 'VIDEO': return '🎥';
+      case 'DOC': return '📝';
+      case 'LINK': return '🔗';
+      default: return '📎';
+    }
+  };
+
+  const getComplexityStyle = (complexity?: string) => {
+    switch (complexity) {
+      case 'Elite': return 'bg-rose-500 text-rose-100';
+      case 'High': return 'bg-amber-500 text-amber-100';
+      case 'Medium': return 'bg-blue-500 text-blue-100';
+      default: return 'bg-slate-500 text-slate-100';
+    }
+  };
+
   const activeBadge = ACADEMY_BADGES.find(b => b.levelId === level.id);
 
   if (showBadge && activeBadge) {
@@ -69,7 +87,6 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans" dir="rtl">
-      {/* Dynamic Progress Header */}
       <header className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-6">
            <button onClick={onBack} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 transition-all group">
@@ -98,9 +115,22 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
         {step === 'CONTENT' && (
           <div className="animate-fade-up space-y-12">
              <div className="aspect-video w-full bg-slate-900 rounded-[3.5rem] overflow-hidden relative group shadow-3xl">
-                <img src={level.imageUrl} className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-1000" alt="" />
+                <img 
+                  src={level.imageUrl} 
+                  className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-1000" 
+                  alt="" 
+                  loading="lazy"
+                />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center bg-gradient-to-t from-slate-950/80 via-transparent to-transparent">
                    <h3 className="text-5xl font-black text-white mb-6 leading-tight tracking-tight">فلسفة {level.title}</h3>
+                   <div className="flex gap-4 mb-6">
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${getComplexityStyle(level.complexity)} shadow-lg`}>
+                        الصعوبة: {level.complexity}
+                      </span>
+                      <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/30">
+                        الوقت المقدر: {level.estimatedTime}
+                      </span>
+                   </div>
                    <p className="text-white/80 text-xl max-w-2xl font-medium leading-relaxed">
                      {level.description} <br/>
                      في هذه المرحلة، سنقوم بتحويل <span className="text-blue-400 font-black">{user.startupName}</span> نحو آفاق جديدة عبر محاور استراتيجية أساسية.
@@ -109,16 +139,61 @@ export const LevelView: React.FC<LevelViewProps> = ({ level, user, tasks, onBack
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {level.pillars ? level.pillars.map((item, i) => (
-                  <div key={i} className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm hover:border-blue-600 transition-all group relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[4rem] group-hover:scale-110 transition-transform"></div>
-                     <span className="text-4xl block mb-6 group-hover:scale-110 transition-transform relative z-10">{item.icon}</span>
-                     <h4 className="text-2xl font-black text-slate-900 mb-3 relative z-10">{item.title}</h4>
-                     <p className="text-slate-500 font-medium leading-relaxed relative z-10">{item.description}</p>
-                  </div>
-                )) : (
-                  <p className="text-slate-400 italic">جاري تحميل محتوى هذه المرحلة من مخدم بيزنس ديفلوبرز...</p>
-                )}
+                <div className="space-y-8">
+                   <h4 className="text-xl font-black text-slate-900 border-r-4 border-blue-600 pr-4">المحاور الرئيسية (Pillars)</h4>
+                   <div className="space-y-6">
+                      {level.pillars ? level.pillars.map((item, i) => (
+                        <div key={i} className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm hover:border-blue-600 transition-all group relative overflow-hidden">
+                           <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[4rem] group-hover:scale-110 transition-transform"></div>
+                           <div className="flex items-center gap-6 relative z-10">
+                              <span className="text-4xl shrink-0 group-hover:scale-110 transition-transform">{item.icon}</span>
+                              <div>
+                                 <h4 className="text-lg font-black text-slate-900 mb-1">{item.title}</h4>
+                                 <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.description}</p>
+                              </div>
+                           </div>
+                        </div>
+                      )) : (
+                        <p className="text-slate-400 italic">جاري تحميل محتوى هذه المرحلة من مخدم بيزنس ديفلوبرز...</p>
+                      )}
+                   </div>
+                </div>
+
+                <div className="space-y-8">
+                   <h4 className="text-xl font-black text-slate-900 border-r-4 border-emerald-600 pr-4">الموارد والتوثيق (Resources)</h4>
+                   <div className="space-y-4">
+                      {level.resources ? level.resources.map((res, i) => (
+                        <a 
+                          key={i} 
+                          href={res.url} 
+                          className="flex items-center justify-between p-6 bg-slate-50 border border-slate-100 rounded-3xl hover:bg-emerald-50 hover:border-emerald-200 transition-all group"
+                        >
+                           <div className="flex items-center gap-5">
+                              <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{getResourceIcon(res.type)}</span>
+                              <div>
+                                 <p className="font-black text-slate-800 text-sm">{res.title}</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Resource Type: {res.type}</p>
+                              </div>
+                           </div>
+                           <span className="text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">↓</span>
+                        </a>
+                      )) : (
+                        <div className="p-10 border-2 border-dashed border-slate-100 rounded-3xl text-center opacity-30">
+                           <p className="text-xs font-bold">لا توجد موارد إضافية لهذا المستوى</p>
+                        </div>
+                      )}
+                   </div>
+                   
+                   <div className="p-8 bg-blue-50 border border-blue-100 rounded-3xl flex gap-6 items-start shadow-inner">
+                      <span className="text-3xl mt-1">💡</span>
+                      <div>
+                         <h5 className="font-black text-blue-900 text-sm mb-1">نصيحة استراتيجية:</h5>
+                         <p className="text-blue-800/70 text-xs font-medium leading-relaxed">
+                            راجع كافة الموارد المرفقة قبل البدء بالاختبار العملي، فهي تحتوي على القوالب التي ستحتاجها في التسليم النهائي.
+                         </p>
+                      </div>
+                   </div>
+                </div>
              </div>
 
              <div className="flex justify-center pt-10">

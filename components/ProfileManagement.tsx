@@ -32,7 +32,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
   const [skillInput, setSkillInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync with storage on mount if needed
   useEffect(() => {
     const session = storageService.getCurrentSession();
     if (session) {
@@ -69,7 +68,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
     setTimeout(() => {
       const session = storageService.getCurrentSession();
       if (session) {
-        // Update User Record
         storageService.updateUser(session.uid, {
           firstName: profile.firstName,
           lastName: profile.lastName,
@@ -79,7 +77,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
           skills: profile.skills
         });
 
-        // Update Startup Record
         storageService.updateStartup(session.projectId!, {
           name: profile.startupName,
           startupBio: profile.startupBio,
@@ -147,8 +144,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
 
   return (
     <div className="max-w-6xl mx-auto space-y-12 animate-fade-up pb-32 text-right" dir="rtl">
-      
-      {/* Save Action Header (Floating-style) */}
       <div className="flex justify-between items-center bg-deep-navy/80 backdrop-blur-xl p-6 rounded-3xl border border-white/5 sticky top-0 z-20 shadow-2xl">
         <div className="flex items-center gap-4">
           <div className="w-2 h-2 bg-saudi-green rounded-full animate-pulse"></div>
@@ -157,7 +152,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className="px-12 py-3 bg-electric-blue text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-electric-blue/20 hover:bg-blue-600 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
+          className="px-12 py-3 bg-electric-blue text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-electric-blue/20 hover:bg-blue-600 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
         >
           {isSaving ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -166,8 +161,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        
-        {/* Left Column: Visuals & Contact */}
         <div className="space-y-8">
           <div className="glass-card p-10 rounded-[3rem] text-center space-y-8 relative overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-1 bg-electric-blue/30"></div>
@@ -177,7 +170,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
              >
                 <div className="w-full h-full rounded-[3.5rem] border-4 border-dashed border-white/5 bg-white/5 flex items-center justify-center overflow-hidden transition-all group-hover:border-electric-blue/50">
                   {profile.logo ? (
-                    <img src={profile.logo} className="w-full h-full object-cover" alt="Startup Logo" />
+                    <img 
+                      src={profile.logo} 
+                      className="w-full h-full object-cover" 
+                      alt="Startup Logo" 
+                      loading="lazy"
+                    />
                   ) : (
                     <span className="text-5xl opacity-20">📁</span>
                   )}
@@ -212,10 +210,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
           </div>
         </div>
 
-        {/* Center & Right Column: Details & Team */}
         <div className="lg:col-span-2 space-y-12">
-          
-          {/* Identity Section */}
           <section className="glass-card p-12 rounded-[4rem] space-y-10">
              <div className="flex items-center gap-4 border-b border-white/5 pb-8">
                 <div className="w-10 h-10 bg-electric-blue/10 text-electric-blue rounded-xl flex items-center justify-center text-xl">🏛️</div>
@@ -248,7 +243,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
              </div>
           </section>
 
-          {/* Founder Section */}
           <section className="glass-card p-12 rounded-[4rem] space-y-10">
              <div className="flex items-center gap-4 border-b border-white/5 pb-8">
                 <div className="w-10 h-10 bg-electric-blue/10 text-electric-blue rounded-xl flex items-center justify-center text-xl">👤</div>
@@ -289,7 +283,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({ user, isDa
              </div>
           </section>
 
-          {/* Team Section */}
           <section className="glass-card p-12 rounded-[4rem] space-y-10">
              <div className="flex items-center gap-4 border-b border-white/5 pb-8">
                 <div className="w-10 h-10 bg-saudi-green/10 text-saudi-green rounded-xl flex items-center justify-center text-xl">👥</div>

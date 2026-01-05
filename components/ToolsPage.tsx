@@ -7,7 +7,11 @@ import {
   generateMarketAnalysisAI,
   generateStrategicPlanAI,
   generatePitchDeckOutline,
-  generateFullBusinessPlanAI
+  generateStructuredBusinessPlanAI,
+  generateSWOTAnalysisAI,
+  generateInvestorPitchAI,
+  generateGTMStrategyAI,
+  generateFinancialForecastAI
 } from '../services/geminiService';
 import { playPositiveSound, playCelebrationSound, playErrorSound } from '../services/audioService';
 
@@ -15,7 +19,7 @@ interface ToolsPageProps {
   onBack: () => void;
 }
 
-type ToolID = 'IDEA' | 'CV' | 'PRODUCT' | 'MARKET' | 'PLAN' | 'DECK' | 'FULL_PLAN';
+type ToolID = 'IDEA' | 'CV' | 'PRODUCT' | 'MARKET' | 'PLAN' | 'DECK' | 'FULL_PLAN' | 'SWOT' | 'INVESTOR_PITCH' | 'GTM' | 'FINANCE';
 
 interface ToolMeta {
   id: ToolID;
@@ -30,24 +34,54 @@ interface ToolMeta {
 
 const TOOLS_META: ToolMeta[] = [
   { 
+    id: 'INVESTOR_PITCH', 
+    title: 'مولد العروض الاستثمارية (Pitch)', 
+    desc: 'ولّد هيكل عرض تقديمي احترافي مصمم لجذب اهتمام المستثمرين.', 
+    detailedInfo: 'صياغة استراتيجية لـ ١٠ شرائح بنظام Sequoia تشمل المشكلة والحل وطلب الاستثمار.',
+    expectedOutput: 'هيكل عرض تقديمي (Pitch Deck Outline) متكامل.',
+    aiLogic: 'Sequoia Capital VC Framework',
+    icon: '🎙️', 
+    color: 'indigo' 
+  },
+  { 
+    id: 'GTM', 
+    title: 'معماري استراتيجية النمو (GTM)', 
+    desc: 'صمم خطة الوصول للسوق واختراق الشرائح المستهدفة.', 
+    detailedInfo: 'تحليل قنوات الاستحواذ، تسعير المنتج، وتحديد الرسائل التسويقية الجوهرية.',
+    expectedOutput: 'خطة Go-to-Market شاملة.',
+    aiLogic: 'Growth Marketing & Acquisition Patterns',
+    icon: '🚀', 
+    color: 'emerald' 
+  },
+  { 
+    id: 'FINANCE', 
+    title: 'المتنبئ المالي لـ ٣ سنوات', 
+    desc: 'توقع الإيرادات والمصروفات وصافي الأرباح بناءً على نموذج عملك.', 
+    detailedInfo: 'محاكاة مالية هيكلية للمساعدة في تقييم الجدوى الاقتصادية للمشروع.',
+    expectedOutput: 'جدول توقعات مالية (Revenue, OpEx, Profit).',
+    aiLogic: 'Structured Financial Modeling',
+    icon: '📊', 
+    color: 'amber' 
+  },
+  { 
     id: 'FULL_PLAN', 
     title: 'معماري خطة العمل الشاملة', 
     desc: 'ولّد وثيقة استراتيجية متكاملة تشمل كافة أقسام خطة العمل المؤسسية.', 
-    detailedInfo: 'محرك Gemini 3 Pro يحلل جوهر فكرتك ليصيغ الملخص التنفيذي، تحليل السوق المالي، وتوقعات النمو لـ ٣ سنوات.',
+    detailedInfo: 'محرك Gemini 3 Pro يحلل جوهر فكرتك ليصيغ الملخص التنفيذي، تحليل السوق المالي، وتوقعات النمو.',
     expectedOutput: 'تقرير خطة عمل (Executive Summary, Market Analysis, Projections).',
-    aiLogic: 'Tier-1 Consulting Framework (McKinsey Style)',
+    aiLogic: 'Tier-1 Consulting Framework',
     icon: '🏛️', 
     color: 'blue' 
   },
   { 
-    id: 'IDEA', 
-    title: 'مولد الأفكار الابتكارية', 
-    desc: 'استخرج أفكاراً لمشاريع ناشئة بناءً على شغفك واتجاهات السوق.', 
-    detailedInfo: 'يستخدم محرك Gemini لتحليل تقاطعات مهاراتك مع "الفجوات البيضاء" في السوق الحالي.',
-    expectedOutput: 'تقرير بصيغة Markdown يحتوي على ٣ أفكار فريدة.',
-    aiLogic: 'تحليل SWOT + استراتيجية المحيط الأزرق',
-    icon: '💡', 
-    color: 'blue' 
+    id: 'SWOT', 
+    title: 'محلل SWOT الاستراتيجي', 
+    desc: 'احصل على تحليل معمق لنقاط القوة، الضعف، الفرص، والتهديدات لمشروعك.', 
+    detailedInfo: 'رؤية نقدية من منظور مستثمر جريء لكشف الثغرات التشغيلية والفرص الخفية.',
+    expectedOutput: 'مصفوفة SWOT مع توصيات معالجة المخاطر.',
+    aiLogic: 'Venture Capital Feasibility Model',
+    icon: '📈', 
+    color: 'rose' 
   },
   { 
     id: 'MARKET', 
@@ -55,19 +89,19 @@ const TOOLS_META: ToolMeta[] = [
     desc: 'احصل على تحليل عميق للمنافسين والاتجاهات لقطاعك المستهدف.', 
     detailedInfo: 'مسح شامل لبيانات السوق العالمية لتحديد حجم الفرصة (TAM) والمنافسين المباشرين.',
     expectedOutput: 'تقرير استخبارات سوقي متكامل.',
-    aiLogic: 'Deep Web Scanning + Sector Analysis',
+    aiLogic: 'Deep Trend Scanning + Sector Analysis',
     icon: '🌍', 
     color: 'emerald' 
   },
   { 
-    id: 'PLAN', 
-    title: 'معماري خطة العمل (Lean)', 
-    desc: 'ابنِ خطة عمل استراتيجية مرنة تغطي جوانب التشغيل والنمو.', 
-    detailedInfo: 'تحويل رؤيتك إلى خطة عمل واقعية تشمل نموذج العمل وقنوات الاستحواذ.',
-    expectedOutput: 'خطة عمل استراتيجية (Lean Canvas).',
-    aiLogic: 'Lean Startup Framework v3.0',
-    icon: '📊', 
-    color: 'amber' 
+    id: 'IDEA', 
+    title: 'مولد الأفكار الابتكارية', 
+    desc: 'استخرج أفكاراً لمشاريع ناشئة بناءً على شغفك واتجاهات السوق.', 
+    detailedInfo: 'يستخدم محرك Gemini لتحليل تقاطعات مهاراتك مع "الفجوات البيضاء" في السوق.',
+    expectedOutput: 'تقرير يحتوي على ٣ أفكار فريدة.',
+    aiLogic: 'تحليل SWOT + استراتيجية المحيط الأزرق',
+    icon: '💡', 
+    color: 'blue' 
   },
   { 
     id: 'PRODUCT', 
@@ -75,29 +109,9 @@ const TOOLS_META: ToolMeta[] = [
     desc: 'حدد المزايا الجوهرية وصمم رحلة المستخدم التقنية.', 
     detailedInfo: 'تحليل المتطلبات التقنية وترتيب أولويات الميزات لبناء منتج أولي.',
     expectedOutput: 'قائمة ميزات MVP + مخطط تدفق المستخدم.',
-    aiLogic: 'Agile Product Management Framework',
+    aiLogic: 'Agile Product Management',
     icon: '⚙️', 
     color: 'cyan' 
-  },
-  { 
-    id: 'CV', 
-    title: 'بروفايل المؤسس (CV)', 
-    desc: 'صمم سيرة ذاتية تبرز مهاراتك القيادية بربطها بمشروعك.', 
-    detailedInfo: 'صياغة ذكية تحول مسارك المهني السابق إلى قصة نجاح ريادية.',
-    expectedOutput: 'سيرة ذاتية ريادية (Executive Profile).',
-    aiLogic: 'NLP Optimization + Storytelling',
-    icon: '👤', 
-    color: 'purple' 
-  },
-  { 
-    id: 'DECK', 
-    title: 'مصمم العرض الاستثماري', 
-    desc: 'صغ هيكلاً قوياً لعرضك التقديمي لاقتناص فرص التمويل.', 
-    detailedInfo: 'توليد هيكل استراتيجي من ٧ شرائح أساسية تغطي (المشكلة، الحل، السوق).',
-    expectedOutput: 'هيكل العرض التقديمي (Pitch Deck Outline).',
-    aiLogic: 'Venture Capital Standards',
-    icon: '🚀', 
-    color: 'rose' 
   }
 ];
 
@@ -105,6 +119,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
   const [activeTool, setActiveTool] = useState<ToolID | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [activeResultTab, setActiveResultTab] = useState<'summary' | 'market' | 'financials'>('summary');
 
   const [forms, setForms] = useState({
     IDEA: { sector: '', interest: '' },
@@ -113,7 +128,11 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
     MARKET: { sector: '', location: 'السعودية والخليج', target: 'B2C' },
     PLAN: { name: '', valueProp: '', revenue: 'اشتراكات شهرية' },
     DECK: { startupName: '', problem: '', solution: '' },
-    FULL_PLAN: { name: '', problem: '', solution: '', audience: '', revenue: '' }
+    FULL_PLAN: { name: '', industry: '', problem: '', solution: '', competitors: '', vision3yr: '' },
+    SWOT: { name: '', description: '' },
+    INVESTOR_PITCH: { name: '', description: '', targetMarket: '', amount: '' },
+    GTM: { name: '', industry: '', target: '', pricing: '' },
+    FINANCE: { name: '', revenueModel: '', initialCap: '', burnRate: '' }
   });
 
   const handleGenerate = async () => {
@@ -127,12 +146,15 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
       const currentForm = (forms as any)[activeTool];
       
       if (activeTool === 'IDEA') res = await generateStartupIdea(currentForm);
-      else if (activeTool === 'CV') res = await generateFounderCV(currentForm);
       else if (activeTool === 'PRODUCT') res = await generateProductSpecs(currentForm);
       else if (activeTool === 'MARKET') res = await generateMarketAnalysisAI(currentForm);
       else if (activeTool === 'PLAN') res = await generateStrategicPlanAI(currentForm);
       else if (activeTool === 'DECK') res = await generatePitchDeckOutline(currentForm);
-      else if (activeTool === 'FULL_PLAN') res = await generateFullBusinessPlanAI(currentForm);
+      else if (activeTool === 'FULL_PLAN') res = await generateStructuredBusinessPlanAI(currentForm);
+      else if (activeTool === 'SWOT') res = await generateSWOTAnalysisAI(currentForm);
+      else if (activeTool === 'INVESTOR_PITCH') res = await generateInvestorPitchAI(currentForm);
+      else if (activeTool === 'GTM') res = await generateGTMStrategyAI(currentForm);
+      else if (activeTool === 'FINANCE') res = await generateFinancialForecastAI(currentForm);
       
       setResult(res);
       playCelebrationSound();
@@ -144,7 +166,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
     }
   };
 
-  const inputClass = "w-full p-5 bg-[#161c2d] border border-white/5 rounded-2xl outline-none focus:border-blue-600 transition-all font-bold text-white placeholder-slate-600";
+  const inputClass = "w-full p-5 bg-[#161c2d] border border-white/5 rounded-2xl outline-none focus:border-blue-600 transition-all font-bold text-white placeholder-slate-600 shadow-inner";
   const labelClass = "block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 pr-2";
 
   return (
@@ -162,12 +184,6 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
             <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">AI-Powered Business Intelligence</p>
           </div>
         </div>
-        {activeTool && (
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Core: Gemini 3 Pro</span>
-          </div>
-        )}
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-16">
@@ -185,7 +201,6 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                   onClick={() => { setActiveTool(tool.id); playPositiveSound(); }}
                   className="text-right p-10 bg-[#0f172a] rounded-[3.5rem] border border-white/5 shadow-2xl hover:border-blue-600 transition-all group relative overflow-hidden flex flex-col justify-between h-full"
                  >
-                    {/* Hover Info Overlay */}
                     <div className="absolute inset-0 bg-[#020617]/95 backdrop-blur-xl p-10 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-center text-right z-20 translate-y-4 group-hover:translate-y-0 pointer-events-none">
                       <div className="space-y-6">
                         <div className="space-y-1">
@@ -196,19 +211,15 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                           <p className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">المخرج المتوقع</p>
                           <p className="text-[11px] font-medium text-slate-300 leading-relaxed italic">{tool.expectedOutput}</p>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">منطق الـ AI المستخدم</p>
-                          <p className="text-[10px] font-bold text-slate-400 font-mono">{tool.aiLogic}</p>
-                        </div>
                         <div className="pt-4 text-center">
                            <span className="bg-blue-600 text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl">انقر للتشغيل الآن</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-bl-[4rem] group-hover:scale-110 transition-transform"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-bl-[4rem]"></div>
                     <div>
-                      <div className="text-5xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform block relative z-10">{tool.icon}</div>
+                      <div className="text-5xl mb-8 group-hover:rotate-6 transition-transform block relative z-10">{tool.icon}</div>
                       <h3 className="text-2xl font-black text-white mb-4 relative z-10">{tool.title}</h3>
                       <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium relative z-10">{tool.desc}</p>
                     </div>
@@ -224,36 +235,104 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-fade-up items-start">
              
              {/* Form Area */}
-             <div className="glass-card p-10 md:p-14 rounded-[4rem] border border-white/5 shadow-3xl space-y-10">
+             <div className="glass-card p-10 md:p-14 rounded-[4rem] border border-white/5 shadow-3xl space-y-10 bg-[#0f172a]/50">
                 <div className="pb-10 border-b border-white/5">
                    <h3 className="text-3xl font-black text-white">{TOOLS_META.find(t => t.id === activeTool)?.title}</h3>
                    <p className="text-blue-500 font-bold text-[10px] uppercase tracking-widest mt-2">إعداد مدخلات المحرك الذكي</p>
                 </div>
 
                 <div className="space-y-8">
-                   {activeTool === 'FULL_PLAN' && (
+                   {activeTool === 'GTM' && (
                      <div className="space-y-6">
                         <div>
                            <label className={labelClass}>اسم المشروع</label>
-                           <input className={inputClass} value={forms.FULL_PLAN.name} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, name: e.target.value}})} placeholder="مثال: منصة عِلم لتدريس البرمجة" />
+                           <input className={inputClass} value={forms.GTM.name} onChange={e => setForms({...forms, GTM: {...forms.GTM, name: e.target.value}})} placeholder="اسم شركتك" />
                         </div>
                         <div>
-                           <label className={labelClass}>المشكلة الجوهرية</label>
-                           <textarea className={inputClass + " h-32 resize-none"} value={forms.FULL_PLAN.problem} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, problem: e.target.value}})} placeholder="صف الفجوة التي لاحظتها في السوق..." />
+                           <label className={labelClass}>القطاع</label>
+                           <input className={inputClass} value={forms.GTM.industry} onChange={e => setForms({...forms, GTM: {...forms.GTM, industry: e.target.value}})} placeholder="Fintech, Health, etc" />
                         </div>
                         <div>
-                           <label className={labelClass}>الحل المقترح</label>
-                           <textarea className={inputClass + " h-32 resize-none"} value={forms.FULL_PLAN.solution} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, solution: e.target.value}})} placeholder="كيف يحل منتجك هذه المشكلة بطريقة مبتكرة؟" />
+                           <label className={labelClass}>الفئة المستهدفة</label>
+                           <input className={inputClass} value={forms.GTM.target} onChange={e => setForms({...forms, GTM: {...forms.GTM, target: e.target.value}})} placeholder="من هم عملاؤك الأوائل؟" />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                           <label className={labelClass}>خطة التسعير</label>
+                           <input className={inputClass} value={forms.GTM.pricing} onChange={e => setForms({...forms, GTM: {...forms.GTM, pricing: e.target.value}})} placeholder="اشتراكات، عمولات، الخ" />
+                        </div>
+                     </div>
+                   )}
+
+                   {activeTool === 'FINANCE' && (
+                     <div className="space-y-6">
+                        <div>
+                           <label className={labelClass}>اسم المشروع</label>
+                           <input className={inputClass} value={forms.FINANCE.name} onChange={e => setForms({...forms, FINANCE: {...forms.FINANCE, name: e.target.value}})} placeholder="اسم الشركة" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>نموذج الإيرادات</label>
+                           <textarea className={inputClass + " h-24 resize-none"} value={forms.FINANCE.revenueModel} onChange={e => setForms({...forms, FINANCE: {...forms.FINANCE, revenueModel: e.target.value}})} placeholder="كيف ستحقق المال؟" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>رأس المال المبدئي</label>
+                           <input className={inputClass} value={forms.FINANCE.initialCap} onChange={e => setForms({...forms, FINANCE: {...forms.FINANCE, initialCap: e.target.value}})} placeholder="مثال: ١٠٠ ألف ريال" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>معدل الحرق الشهري المقدر (OpEx)</label>
+                           <input className={inputClass} value={forms.FINANCE.burnRate} onChange={e => setForms({...forms, FINANCE: {...forms.FINANCE, burnRate: e.target.value}})} placeholder="مثال: ١٠ آلاف ريال" />
+                        </div>
+                     </div>
+                   )}
+
+                   {activeTool === 'INVESTOR_PITCH' && (
+                     <div className="space-y-6">
+                        <div>
+                           <label className={labelClass}>اسم المشروع</label>
+                           <input className={inputClass} value={forms.INVESTOR_PITCH.name} onChange={e => setForms({...forms, INVESTOR_PITCH: {...forms.INVESTOR_PITCH, name: e.target.value}})} placeholder="اسم شركتك" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>وصف المشروع والمنتج</label>
+                           <textarea className={inputClass + " h-32 resize-none"} value={forms.INVESTOR_PITCH.description} onChange={e => setForms({...forms, INVESTOR_PITCH: {...forms.INVESTOR_PITCH, description: e.target.value}})} placeholder="ما الذي تقدمه للعملاء؟" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>مبلغ الاستثمار المطلوب</label>
+                           <input className={inputClass} value={forms.INVESTOR_PITCH.amount} onChange={e => setForms({...forms, INVESTOR_PITCH: {...forms.INVESTOR_PITCH, amount: e.target.value}})} placeholder="مثال: ٥٠٠ ألف دولار" />
+                        </div>
+                     </div>
+                   )}
+
+                   {activeTool === 'SWOT' && (
+                     <div className="space-y-6">
+                        <div>
+                           <label className={labelClass}>اسم المشروع</label>
+                           <input className={inputClass} value={forms.SWOT.name} onChange={e => setForms({...forms, SWOT: {...forms.SWOT, name: e.target.value}})} placeholder="أدخل اسم شركتك الناشئة" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>وصف المشروع والعمليات</label>
+                           <textarea className={inputClass + " h-48 resize-none leading-relaxed"} value={forms.SWOT.description} onChange={e => setForms({...forms, SWOT: {...forms.SWOT, description: e.target.value}})} placeholder="تحدث عن فكرتك، فريقك، والمنافسين..." />
+                        </div>
+                     </div>
+                   )}
+
+                   {activeTool === 'FULL_PLAN' && (
+                     <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-6">
                            <div>
-                              <label className={labelClass}>الجمهور المستهدف</label>
-                              <input className={inputClass} value={forms.FULL_PLAN.audience} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, audience: e.target.value}})} placeholder="B2B, أفراد..." />
+                              <label className={labelClass}>اسم المشروع</label>
+                              <input className={inputClass} value={forms.FULL_PLAN.name} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, name: e.target.value}})} placeholder="اسم الكيان" />
                            </div>
                            <div>
-                              <label className={labelClass}>نموذج الإيرادات</label>
-                              <input className={inputClass} value={forms.FULL_PLAN.revenue} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, revenue: e.target.value}})} placeholder="اشتراكات، عمولات..." />
+                              <label className={labelClass}>القطاع</label>
+                              <input className={inputClass} value={forms.FULL_PLAN.industry} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, industry: e.target.value}})} placeholder="FinTech" />
                            </div>
+                        </div>
+                        <div>
+                           <label className={labelClass}>المشكلة والحل</label>
+                           <textarea className={inputClass + " h-32 resize-none"} value={forms.FULL_PLAN.problem} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, problem: e.target.value}})} placeholder="ما هو الألم الذي تعالجه؟" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>الرؤية لـ ٣ سنوات</label>
+                           <textarea className={inputClass + " h-32 resize-none"} value={forms.FULL_PLAN.vision3yr} onChange={e => setForms({...forms, FULL_PLAN: {...forms.FULL_PLAN, vision3yr: e.target.value}})} placeholder="أين ترى مشروعك بعد ٣ سنوات؟" />
                         </div>
                      </div>
                    )}
@@ -261,33 +340,12 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                    {activeTool === 'MARKET' && (
                      <div className="space-y-6">
                         <div>
-                           <label className={labelClass}>القطاع المستهدف</label>
-                           <input className={inputClass} placeholder="الخدمات اللوجستية" value={forms.MARKET.sector} onChange={e => setForms({...forms, MARKET: {...forms.MARKET, sector: e.target.value}})} />
+                           <label className={labelClass}>القطاع</label>
+                           <input className={inputClass} value={forms.MARKET.sector} onChange={e => setForms({...forms, MARKET: {...forms.MARKET, sector: e.target.value}})} placeholder="الخدمات اللوجستية" />
                         </div>
                         <div>
-                           <label className={labelClass}>النطاق الجغرافي</label>
-                           <input className={inputClass} placeholder="المملكة العربية السعودية" value={forms.MARKET.location} onChange={e => setForms({...forms, MARKET: {...forms.MARKET, location: e.target.value}})} />
-                        </div>
-                        <div>
-                           <label className={labelClass}>فئة العملاء</label>
-                           <select className={inputClass} value={forms.MARKET.target} onChange={e => setForms({...forms, MARKET: {...forms.MARKET, target: e.target.value}})}>
-                              <option value="B2C">أفراد (B2C)</option>
-                              <option value="B2B">شركات (B2B)</option>
-                              <option value="Gov">جهات حكومية (B2G)</option>
-                           </select>
-                        </div>
-                     </div>
-                   )}
-
-                   {activeTool === 'IDEA' && (
-                     <div className="space-y-6">
-                        <div>
-                           <label className={labelClass}>قطاع العمل المفضل</label>
-                           <input className={inputClass} value={forms.IDEA.sector} onChange={e => setForms({...forms, IDEA: {...forms.IDEA, sector: e.target.value}})} />
-                        </div>
-                        <div>
-                           <label className={labelClass}>مهاراتك واهتماماتك</label>
-                           <textarea className={inputClass + " h-40 resize-none"} value={forms.IDEA.interest} onChange={e => setForms({...forms, IDEA: {...forms.IDEA, interest: e.target.value}})} />
+                           <label className={labelClass}>الموقع الجغرافي</label>
+                           <input className={inputClass} value={forms.MARKET.location} onChange={e => setForms({...forms, MARKET: {...forms.MARKET, location: e.target.value}})} placeholder="المملكة العربية السعودية" />
                         </div>
                      </div>
                    )}
@@ -295,17 +353,15 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                    <button 
                     onClick={handleGenerate} 
                     disabled={isLoading}
-                    className="w-full py-7 bg-blue-600 text-white rounded-[2.5rem] font-black text-xl shadow-3xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50"
+                    className="w-full py-7 bg-blue-600 text-white rounded-[2.5rem] font-black text-xl shadow-3xl shadow-blue-500/30 transition-all active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50 btn-glow"
                    >
                      {isLoading ? (
                        <>
                          <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
-                         <span>جاري المعالجة...</span>
+                         <span>جاري المعالجة الذكية...</span>
                        </>
                      ) : (
-                       <>
-                        <span>تفعيل المحرك الذكي 🚀</span>
-                       </>
+                       <span>تفعيل المحرك الاستراتيجي 🚀</span>
                      )}
                    </button>
                 </div>
@@ -315,39 +371,79 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
              <div className="bg-[#0f172a] p-12 rounded-[4rem] text-white min-h-[700px] flex flex-col relative overflow-hidden shadow-3xl border border-white/5">
                 <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_left,rgba(0,82,255,0.05),transparent_50%)] pointer-events-none"></div>
                 
+                {isLoading && (
+                  <div className="flex-1 flex flex-col items-center justify-center text-center relative z-10">
+                     <div className="w-32 h-32 border-8 border-white/5 border-t-blue-600 rounded-full animate-spin mb-10 shadow-2xl shadow-blue-500/20"></div>
+                     <h3 className="text-3xl font-black animate-pulse uppercase tracking-widest">Architecting Strategy</h3>
+                     <div className="mt-8 space-y-2">
+                        <p className="text-xs font-mono text-blue-500 tracking-[0.2em] uppercase">Scanning Market Ecosystem...</p>
+                        <p className="text-[10px] font-mono text-slate-600 tracking-[0.1em] uppercase">Gemini-3 Pro Active Node</p>
+                     </div>
+                  </div>
+                )}
+
                 {!result && !isLoading && (
                   <div className="flex-1 flex flex-col items-center justify-center text-center opacity-30">
                      <div className="text-8xl mb-10 animate-float">🤖</div>
                      <h3 className="text-2xl font-black">بانتظار المدخلات</h3>
-                     <p className="max-w-xs mt-4 font-medium">املأ البيانات في اليمين لنقوم بتوليد المخرج الاستراتيجي الشامل.</p>
-                  </div>
-                )}
-                
-                {isLoading && (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center">
-                     <div className="w-32 h-32 border-8 border-white/5 border-t-blue-600 rounded-full animate-spin mb-10 shadow-2xl shadow-blue-500/20"></div>
-                     <h3 className="text-3xl font-black animate-pulse uppercase tracking-widest">Architecting Strategy</h3>
-                     <p className="text-slate-500 text-sm mt-6">نستخدم Gemini 3 Pro لضمان جودة استثمارية عالية.</p>
+                     <p className="max-w-xs mt-4 font-medium text-slate-400">املأ البيانات في اليمين لنقوم بتوليد المخرج الاستراتيجي الشامل.</p>
                   </div>
                 )}
 
-                {result && (
-                  <div className="animate-fade-up space-y-10 pb-10 relative z-10">
+                {result && activeTool === 'FINANCE' && (
+                  <div className="animate-fade-up space-y-10 pb-10 relative z-10 flex-1 flex flex-col">
+                    <div className="pb-8 border-b border-white/5">
+                      <h4 className="text-2xl font-black text-amber-400">توقعات التدفقات المالية (٣ سنوات)</h4>
+                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Financial Integrity Simulation</p>
+                    </div>
+
+                    <div className="flex-1 overflow-x-auto">
+                      <table className="w-full text-right border-collapse">
+                        <thead>
+                          <tr className="bg-white/5">
+                            <th className="p-4 text-xs font-black text-slate-400 uppercase border-b border-white/10">السنة</th>
+                            <th className="p-4 text-xs font-black text-slate-400 uppercase border-b border-white/10">الإيرادات</th>
+                            <th className="p-4 text-xs font-black text-slate-400 uppercase border-b border-white/10">المصروفات</th>
+                            <th className="p-4 text-xs font-black text-slate-400 uppercase border-b border-white/10">صافي الربح</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {result.years.map((y: any, i: number) => (
+                            <tr key={i} className="hover:bg-white/5 transition-colors">
+                              <td className="p-4 font-black text-white">{y.yearLabel}</td>
+                              <td className="p-4 font-bold text-emerald-400">{y.revenue.toLocaleString()}</td>
+                              <td className="p-4 font-bold text-rose-400">{y.expenses.toLocaleString()}</td>
+                              <td className={`p-4 font-black ${y.netProfit >= 0 ? 'text-blue-400' : 'text-rose-600'}`}>{y.netProfit.toLocaleString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="p-6 bg-blue-600/10 border border-blue-500/20 rounded-3xl">
+                      <p className="text-[10px] font-black text-blue-400 uppercase mb-2">توصية المدير المالي (CFO Advice):</p>
+                      <p className="text-sm font-medium leading-relaxed italic text-slate-200">"{result.strategicAdvice}"</p>
+                    </div>
+                  </div>
+                )}
+
+                {result && activeTool !== 'FINANCE' && (
+                  <div className="animate-fade-up space-y-10 pb-10 relative z-10 flex-1 flex flex-col">
                      <div className="flex justify-between items-center pb-8 border-b border-white/5">
                         <div>
-                          <h4 className="text-2xl font-black text-blue-400">التقرير النهائي للمشروع</h4>
-                          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Generated by Global Standard AI</p>
+                          <h4 className="text-2xl font-black text-blue-400">المخرج الاستراتيجي</h4>
+                          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Generated by Global Standard AI Strategy Core</p>
                         </div>
                         <button 
                           onClick={() => { navigator.clipboard.writeText(typeof result === 'string' ? result : JSON.stringify(result)); alert('تم النسخ!'); }} 
                           className="text-[10px] font-black uppercase tracking-widest px-8 py-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/10"
                         >
-                          نسخ المحتوى
+                          نسخ المخرج
                         </button>
                      </div>
-                     <div className="prose prose-invert max-w-none text-right">
-                        <div className="text-xl leading-relaxed whitespace-pre-wrap font-medium text-slate-200">
-                           {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+                     <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 pt-6">
+                        <div className="text-lg leading-relaxed whitespace-pre-wrap font-medium text-slate-200">
+                           {typeof result === 'string' ? result : (activeTool === 'FULL_PLAN' ? result.executiveSummary : JSON.stringify(result, null, 2))}
                         </div>
                      </div>
                   </div>

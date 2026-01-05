@@ -3,13 +3,22 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { 
   StartupRecord, 
   PartnerProfile, 
-  MatchResult
+  OpportunityAnalysis,
+  AnalyticalQuestion,
+  ProjectEvaluationResult,
+  NominationResult,
+  ProjectBuildData,
+  FailureSimulation,
+  GovStats,
+  ApplicantProfile
 } from "../types";
 
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+// Standardized callGemini helper
 const callGemini = async (params: { prompt: string; systemInstruction?: string; json?: boolean; schema?: any; model?: string }) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const config: any = {
-    temperature: 0.4, 
+    temperature: 0.7, 
     topP: 0.95,
   };
 
@@ -28,288 +37,605 @@ const callGemini = async (params: { prompt: string; systemInstruction?: string; 
     config,
   });
 
-  if (params.json) {
-    try {
-      return JSON.parse(response.text || "{}");
-    } catch (e) {
-      console.error("JSON parse failed", response.text);
-      throw e;
-    }
-  }
-
   return response.text;
 };
 
-// إنشاء خطة عمل احترافية متكاملة
-export const generateFullBusinessPlanAI = async (data: { 
-  name: string; 
-  problem: string; 
-  solution: string; 
-  audience: string;
-  revenue: string;
-}) => {
+/**
+ * Go-to-Market (GTM) Strategy Generator
+ */
+export const generateGTMStrategyAI = async (data: { name: string; industry: string; target: string; pricing: string }) => {
+  const prompt = `Project: ${data.name}\nIndustry: ${data.industry}\nTarget Audience: ${data.target}\nPricing Strategy: ${data.pricing}`;
+  return callGemini({
+    model: "gemini-3-pro-preview",
+    prompt,
+    systemInstruction: `You are a world-class Growth Marketing Strategist. Generate a comprehensive Go-to-Market (GTM) strategy in Arabic Markdown.
+    Include:
+    1. Channel Identification (Which platforms and why?)
+    2. Customer Acquisition Cost (CAC) Estimates
+    3. Content Pillars & Messaging
+    4. Sales Funnel Architecture
+    5. Referral & Viral Loops design.`
+  });
+};
+
+/**
+ * 3-Year Financial Forecast Generator (JSON)
+ */
+export const generateFinancialForecastAI = async (data: { name: string; revenueModel: string; initialCap: string; burnRate: string }) => {
+  const prompt = `Business: ${data.name}\nRevenue Model: ${data.revenueModel}\nInitial Capital: ${data.initialCap}\nMonthly Burn Rate: ${data.burnRate}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: `You are a CFO at a top-tier VC firm. Generate a structured 3-year financial projection in Arabic.
+      The output must be JSON format.
+      - Each year must include revenue, expenses, and netProfit.
+      - Include a "strategicAdvice" section for the founder.`,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          years: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                yearLabel: { type: Type.STRING },
+                revenue: { type: Type.NUMBER },
+                expenses: { type: Type.NUMBER },
+                netProfit: { type: Type.NUMBER }
+              }
+            }
+          },
+          strategicAdvice: { type: Type.STRING }
+        }
+      }
+    }
+  });
+
+  return JSON.parse(response.text || "{}");
+};
+
+/**
+ * Generates a persuasive Investor Pitch Deck Outline.
+ */
+export const generateInvestorPitchAI = async (data: { name: string; description: string; targetMarket: string; amount: string }) => {
   const prompt = `
-    بيانات المشروع:
-    - الاسم: ${data.name}
-    - المشكلة: ${data.problem}
-    - الحل المقترح: ${data.solution}
-    - الجمهور المستهدف: ${data.audience}
-    - نموذج الربح: ${data.revenue}
+    Business Name: ${data.name}
+    Business Description: ${data.description}
+    Target Market: ${data.targetMarket}
+    Investment Amount Requested: ${data.amount}
   `;
 
   return callGemini({
     model: "gemini-3-pro-preview",
     prompt,
-    systemInstruction: `أنت كبير مستشاري استراتيجية في شركة استشارات عالمية (MBB). 
-    بناءً على المعطيات، قم بتوليد خطة عمل استراتيجية (Business Plan) تتكون من:
-    1. ملخص تنفيذي (Executive Summary): صياغة قوية تلخص جوهر الفرصة.
-    2. تحليل السوق (Market Analysis): تفصيل لحجم السوق المتوقع (TAM/SAM/SOM) وتحليل المنافسين.
-    3. استراتيجية النمو (Growth Strategy): قنوات الاستحواذ والتوسع.
-    4. التوقعات المالية (Financial Projections): تقديرات منطقية للدخل والتكاليف لـ 3 سنوات بأسلوب جدولي.
-    استخدم تنسيق Markdown احترافي، لغة عربية اقتصادية رصينة، ونبرة واثقة ومحفزة للمستثمرين.`
+    systemInstruction: `You are a legendary Venture Capital Pitch Coach. Generate a highly persuasive, 10-slide Pitch Deck Outline in Arabic for the following startup.
+    Use the Sequoia Capital Pitch Deck Framework. Return the response in clear Markdown with bold headers.`
   });
 };
 
-// الوظائف السابقة
-export const generateMarketAnalysisAI = async (data: { sector: string; location: string; target: string }) => {
-  const prompt = `القطاع: ${data.sector}\nالمنطقة: ${data.location}\nالجمهور: ${data.target}`;
-  return callGemini({
+/**
+ * Generates a structured Business Plan with specific sections in JSON format.
+ */
+export const generateStructuredBusinessPlanAI = async (data: { 
+  name: string; 
+  industry: string;
+  problem: string; 
+  solution: string; 
+  competitors: string;
+  vision3yr: string;
+}) => {
+  const prompt = `
+    Business Name: ${data.name}
+    Industry: ${data.industry}
+    Core Problem: ${data.problem}
+    Proposed Solution: ${data.solution}
+    Main Competitors: ${data.competitors}
+    3-Year Vision: ${data.vision3yr}
+  `;
+
+  const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
-    prompt,
-    systemInstruction: "أنت محلل سوق استراتيجي. قم بإجراء تحليل معمق للمنافسين والاتجاهات لعام 2025 باللغة العربية."
+    contents: prompt,
+    config: {
+      systemInstruction: `You are a World-Class Venture Capital Strategist. Generate a professional, highly-detailed Business Plan in Arabic.
+      The response MUST be a structured JSON object containing:
+      1. executiveSummary: A high-impact summary for investors.
+      2. marketAnalysis: Deep analysis of TAM/SAM/SOM, trends, and competitive landscape.
+      3. financialProjections: A detailed 3-year projection.`,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          executiveSummary: { type: Type.STRING },
+          marketAnalysis: { type: Type.STRING },
+          financialProjections: { type: Type.STRING }
+        },
+        required: ["executiveSummary", "marketAnalysis", "financialProjections"]
+      }
+    }
   });
+
+  return JSON.parse(response.text || "{}");
 };
 
+// Added missing export for Strategic Plan generation to fix ToolsPage.tsx error
+/**
+ * Strategic Plan Generator
+ */
 export const generateStrategicPlanAI = async (data: { name: string; valueProp: string; revenue: string }) => {
-  const prompt = `المشروع: ${data.name}\nالقيمة: ${data.valueProp}\nالربح: ${data.revenue}`;
+  const prompt = `Project: ${data.name}\nValue Prop: ${data.valueProp}\nRevenue Model: ${data.revenue}`;
   return callGemini({
     model: "gemini-3-pro-preview",
     prompt,
-    systemInstruction: "أنت خبير Lean Startup. قم ببناء مخطط نموذج عمل استراتيجي متكامل باللغة العربية."
+    systemInstruction: `You are a Senior Business Strategist. Generate a concise Strategic Plan in Arabic Markdown.
+    Include:
+    1. Executive Summary
+    2. Operational Strategy
+    3. Revenue Streams optimization
+    4. Key Partnerships needed
+    5. 12-month roadmap.`
   });
 };
+
+/**
+ * Analyzes Startup KPIs and provides strategic feedback and risk assessment.
+ */
+export const analyzeStartupKPIsAI = async (startup: StartupRecord) => {
+  const prompt = `
+    Startup Profile: ${startup.name} (${startup.industry})
+    Current Track: ${startup.currentTrack}
+    KPI History: ${JSON.stringify(startup.kpiHistory)}
+    Current Partners: ${startup.partners.length}
+  `;
+
+  return callGemini({
+    model: "gemini-3-pro-preview",
+    prompt,
+    systemInstruction: `You are an Elite Venture Capital Analyst. Analyze the following startup KPI data. Return professional evaluation in Markdown Arabic.`,
+  });
+};
+
+// --- Market Analysis Tools ---
+
+/**
+ * Performs Deep Market Scanning and Competitor Intelligence.
+ */
+export const generateMarketAnalysisAI = async (data: { sector: string; location: string; target: string }) => {
+  const prompt = `Sector: ${data.sector}\nGeo-Target: ${data.location}\nCustomer Profile: ${data.target}`;
+  return callGemini({
+    model: "gemini-3-pro-preview",
+    prompt,
+    systemInstruction: `Act as a Market Intelligence Analyst. Perform a deep analysis of the current market trends for 2025.
+    Include Industry Macro Trends, Competitive Landscape, Barriers to Entry, and Strategic Growth Opportunities.
+    Format in Markdown Arabic.`
+  });
+};
+
+/**
+ * Strategic SWOT Analysis Tool.
+ */
+export const generateSWOTAnalysisAI = async (data: { name: string; description: string }) => {
+  const prompt = `Perform a high-level SWOT analysis for the startup: "${data.name}". Context/Description: ${data.description}.`;
+
+  return callGemini({
+    model: "gemini-3-pro-preview",
+    prompt,
+    systemInstruction: "You are a Senior Strategic Consultant. Perform a brutal, honest SWOT analysis in Arabic Markdown. Use structured tables for clarity."
+  });
+};
+
+// --- Other Utility Tools ---
+
+export const generateStartupIdea = async (form: { sector: string; interest: string }) => {
+  const prompt = `Interests: ${form.interest}\nSector: ${form.sector}`;
+  return callGemini({ 
+    prompt, 
+    systemInstruction: "Generate 3 hyper-modern startup ideas. Format in Arabic Markdown." 
+  });
+};
+
+export const generateFounderCV = async (form: any) => {
+  const prompt = `Founder Profile: ${JSON.stringify(form)}`;
+  return callGemini({ 
+    prompt, 
+    systemInstruction: "Write a high-impact Entrepreneurial CV (Executive Profile) in Arabic Markdown." 
+  });
+};
+
+export const generateProductSpecs = async (form: { projectName: string; description: string }) => {
+  const prompt = `Project: ${form.projectName}\nDesc: ${form.description}`;
+  return callGemini({ 
+    prompt, 
+    systemInstruction: "Define MVP Product Specifications and prioritizations. Arabic Markdown." 
+  });
+};
+
+export const generatePitchDeckOutline = async (form: { startupName: string; problem: string; solution: string }) => {
+  const prompt = `Startup: ${form.startupName}\nProblem: ${form.problem}\nSolution: ${form.solution}`;
+  return callGemini({
+    model: "gemini-3-flash-preview",
+    prompt,
+    systemInstruction: "Generate a 10-slide Pitch Deck structure based on Venture Capital standards. Arabic Markdown."
+  });
+};
+
+// --- App Core AI Logic ---
 
 export const getQuickSupportResponseAI = async (message: string) => {
   return callGemini({
     prompt: message,
-    systemInstruction: "أنت المساعد الذكي لمسرعة أعمال 'بيزنس ديفلوبرز'. أجب باختصار واحترافية وبأسلوب فخم باللغة العربية."
+    systemInstruction: "You are the AI support of 'Business Developers' Accelerator. Be professional, concise, and helpful in Arabic."
   });
 };
 
-export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partners: PartnerProfile[]): Promise<MatchResult[]> => {
-  const prompt = `Startup: ${startup.name}. Industry: ${startup.industry}. Desc: ${startup.description}. Available Partners: ${JSON.stringify(partners.slice(0, 20))}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Match startups with top 10 potential partners. Return JSON array.",
-    json: true,
-    schema: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          id: { type: Type.STRING },
-          name: { type: Type.STRING },
-          role: { type: Type.STRING },
-          totalScore: { type: Type.NUMBER },
-          reason: { type: Type.STRING },
-          scores: { type: Type.OBJECT, properties: { roleFit: { type: Type.NUMBER }, experienceFit: { type: Type.NUMBER }, industryFit: { type: Type.NUMBER }, styleFit: { type: Type.NUMBER } } }
+export const runSmartMatchingAlgorithmAI = async (startup: StartupRecord, partners: PartnerProfile[]): Promise<any> => {
+  const prompt = `Startup: ${startup.name}. Industry: ${startup.industry}. Available Partners: ${JSON.stringify(partners.slice(0, 20))}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Match startups with top 10 potential partners based on role complementarity. Return JSON array.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            id: { type: Type.STRING },
+            partnerUid: { type: Type.STRING },
+            name: { type: Type.STRING },
+            role: { type: Type.STRING },
+            totalScore: { type: Type.NUMBER },
+            reason: { type: Type.STRING },
+            scores: { 
+              type: Type.OBJECT, 
+              properties: { 
+                roleFit: { type: Type.NUMBER }, 
+                experienceFit: { type: Type.NUMBER }, 
+                industryFit: { type: Type.NUMBER }, 
+                styleFit: { type: Type.NUMBER } 
+              } 
+            }
+          }
         }
       }
+    }
+  });
+
+  return JSON.parse(response.text || "[]");
+};
+
+export const discoverOpportunities = async (name: string, desc: string, industry: string): Promise<any> => {
+  const prompt = `Startup: ${name}, Industry: ${industry}, Description: ${desc}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Analyze growth opportunities and 'Blue Ocean' ideas. Return JSON.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          newMarkets: { 
+            type: Type.ARRAY, 
+            items: { 
+              type: Type.OBJECT, 
+              properties: { 
+                region: { type: Type.STRING }, 
+                reasoning: { type: Type.STRING }, 
+                potentialROI: { type: Type.STRING } 
+              } 
+            } 
+          },
+          blueOceanIdea: { type: Type.STRING }
+        }
+      }
+    }
+  });
+
+  return JSON.parse(response.text || "{}");
+};
+
+export const suggestIconsForLevels = async () => {
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: "Suggest modern icons and brand colors for 6 accelerator levels.",
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          suggestions: { 
+            type: Type.ARRAY, 
+            items: { 
+              type: Type.OBJECT, 
+              properties: { 
+                id: { type: Type.NUMBER }, 
+                icon: { type: Type.STRING }, 
+                color: { type: Type.STRING } 
+              } 
+            } 
+          }
+        }
+      }
+    }
+  });
+  return JSON.parse(response.text || "{}");
+};
+
+export const createPathFinderChat = () => {
+  return ai.chats.create({
+    model: "gemini-3-flash-preview",
+    config: { 
+      systemInstruction: "You are a pathfinding consultant. Ask the user about their goals and project stage. Then provide a hidden JSON decision block (```json {\"decision\": \"APPROVED\"...} ```) when they are qualified for the accelerator." 
     }
   });
 };
 
 export const reviewDeliverableAI = async (title: string, desc: string, context: string) => {
-  const prompt = `Deliverable: ${title}\nContext: ${context}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Review deliverable and return JSON score and feedback.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: {
-        readinessScore: { type: Type.NUMBER },
-        criticalFeedback: { type: Type.STRING },
-        suggestedNextSteps: { type: Type.ARRAY, items: { type: Type.STRING } },
-        isReadyForHumanMentor: { type: Type.BOOLEAN }
+  const prompt = `Deliverable: ${title}\nUser Context: ${context}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Act as an Investment Review Committee. Review the startup deliverable. Return JSON with readinessScore and criticalFeedback.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          readinessScore: { type: Type.NUMBER },
+          criticalFeedback: { type: Type.STRING },
+          suggestedNextSteps: { type: Type.ARRAY, items: { type: Type.STRING } },
+          isReadyForHumanMentor: { type: Type.BOOLEAN }
+        }
       }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
 export const evaluateTemplateAI = async (templateTitle: string, formData: any) => {
-  const prompt = `Template: ${templateTitle}\nData: ${JSON.stringify(formData)}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Evaluate deliverable JSON score and feedback.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { score: { type: Type.NUMBER }, feedback: { type: Type.STRING }, approved: { type: Type.BOOLEAN } }
-    }
-  });
-};
-
-export const discoverOpportunities = async (name: string, desc: string, industry: string) => {
-  const prompt = `Startup: ${name}, Industry: ${industry}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Analyze opportunities JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: {
-        newMarkets: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { region: { type: Type.STRING }, reasoning: { type: Type.STRING }, potentialROI: { type: Type.STRING } } } },
-        blueOceanIdea: { type: Type.STRING }
+  const prompt = `Template: ${templateTitle}\nSubmitted Data: ${JSON.stringify(formData)}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Evaluate the strategic quality of the filled business template. Return JSON with score, feedback, and approved boolean.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          score: { type: Type.NUMBER }, 
+          feedback: { type: Type.STRING }, 
+          approved: { type: Type.BOOLEAN } 
+        }
       }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
-export const suggestIconsForLevels = async () => {
-  return callGemini({
-    prompt: "Suggest icons/colors JSON for 6 levels.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: {
-        suggestions: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { id: { type: Type.NUMBER }, icon: { type: Type.STRING }, color: { type: Type.STRING } } } }
+export const generateAnalyticalQuestions = async (profile: ApplicantProfile): Promise<AnalyticalQuestion[]> => {
+  const prompt = `Generate 5 analytical multiple-choice questions in Arabic for a startup in the ${profile.sector} sector at the ${profile.projectStage} stage. The founder's challenge is: ${profile.goal}. Return a JSON array.`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Generate exactly 5 analytical multiple-choice questions in Arabic. Return a JSON array.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            text: { type: Type.STRING },
+            options: { type: Type.ARRAY, items: { type: Type.STRING } },
+            correctIndex: { type: Type.INTEGER },
+            difficulty: { type: Type.STRING }
+          }
+        }
       }
     }
   });
+
+  return JSON.parse(response.text || "[]");
 };
 
-export const generateAnalyticalQuestions = async (profile: any) => {
-  const prompt = `Questions for: ${JSON.stringify(profile)}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Generate 5 questions JSON.",
-    json: true,
-    schema: {
-      type: Type.ARRAY,
-      items: { type: Type.OBJECT, properties: { text: { type: Type.STRING }, options: { type: Type.ARRAY, items: { type: Type.STRING } }, correctIndex: { type: Type.NUMBER }, difficulty: { type: Type.STRING } } }
-    }
-  });
-};
-
-export const evaluateProjectIdea = async (text: string, profile: any) => {
-  const prompt = `Evaluate Idea: ${text}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Deep SWOT JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: {
-        totalScore: { type: Type.NUMBER }, classification: { type: Type.STRING }, clarity: { type: Type.NUMBER }, value: { type: Type.NUMBER }, innovation: { type: Type.NUMBER }, market: { type: Type.NUMBER }, readiness: { type: Type.NUMBER }, strengths: { type: Type.ARRAY, items: { type: Type.STRING } }, weaknesses: { type: Type.ARRAY, items: { type: Type.STRING } }, aiOpinion: { type: Type.STRING }
+export const evaluateProjectIdea = async (text: string, profile: any): Promise<ProjectEvaluationResult> => {
+  const prompt = `Evaluate Idea: ${text}\nFounder Profile: ${JSON.stringify(profile)}`;
+  
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: prompt,
+    config: {
+      systemInstruction: "Perform a deep SWOT and feasibility analysis. Return JSON ProjectEvaluationResult.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          totalScore: { type: Type.NUMBER }, 
+          classification: { type: Type.STRING }, 
+          clarity: { type: Type.NUMBER }, 
+          value: { type: Type.NUMBER }, 
+          innovation: { type: Type.NUMBER }, 
+          market: { type: Type.NUMBER }, 
+          readiness: { type: Type.NUMBER }, 
+          strengths: { type: Type.ARRAY, items: { type: Type.STRING } }, 
+          weaknesses: { type: Type.ARRAY, items: { type: Type.STRING } }, 
+          aiOpinion: { type: Type.STRING }
+        }
       }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
-export const evaluateNominationForm = async (data: any) => {
-  const prompt = `Nomination: ${JSON.stringify(data)}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Application screen JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { aiScore: { type: Type.NUMBER }, redFlags: { type: Type.ARRAY, items: { type: Type.STRING } }, aiAnalysis: { type: Type.STRING } }
+export const evaluateNominationForm = async (data: any): Promise<any> => {
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: `Nomination Form: ${JSON.stringify(data)}`,
+    config: {
+      systemInstruction: "Screen nomination for accelerator entry. Return JSON with aiScore, redFlags, and aiAnalysis.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          aiScore: { type: Type.NUMBER }, 
+          redFlags: { type: Type.ARRAY, items: { type: Type.STRING } }, 
+          aiAnalysis: { type: Type.STRING } 
+        }
+      }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
 export const runProjectAgents = async (projectName: string, description: string, agents: string[]) => {
-  const prompt = `Project: ${projectName}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Agent simulation JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { vision: { type: Type.STRING }, market: { type: Type.STRING }, users: { type: Type.STRING }, hypotheses: { type: Type.ARRAY, items: { type: Type.STRING } } }
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: `Simulate Project: ${projectName}. Agents Active: ${agents.join(',')}. Project Description: ${description}`,
+    config: {
+      systemInstruction: "Simulate a multi-agent strategy session. Return JSON with vision, market, users, and hypotheses.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          vision: { type: Type.STRING }, 
+          market: { type: Type.STRING }, 
+          users: { type: Type.STRING }, 
+          hypotheses: { type: Type.ARRAY, items: { type: Type.STRING } } 
+        }
+      }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
 export const generatePitchDeck = async (projectName: string, description: string, context: any) => {
-  const prompt = `Deck for: ${projectName}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "10-slide deck JSON.",
-    json: true,
-    schema: {
-      type: Type.ARRAY,
-      items: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, content: { type: Type.STRING } } }
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: `Project: ${projectName}. Context: ${JSON.stringify(context)}`,
+    config: {
+      systemInstruction: "Generate a 10-slide high-stakes pitch deck. Return JSON array of objects with title and content.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: { 
+          type: Type.OBJECT, 
+          properties: { 
+            title: { type: Type.STRING }, 
+            content: { type: Type.STRING } 
+          } 
+        }
+      }
     }
   });
-};
-
-export const generatePitchDeckOutline = async (form: { startupName: string; problem: string; solution: string }) => {
-  const prompt = `Startup: ${form.startupName}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Generate 7-slide pitch deck outline in Markdown Arabic."
-  });
+  return JSON.parse(response.text || "[]");
 };
 
 export const analyzeExportOpportunity = async (data: any) => {
-  const prompt = `Export Data: ${JSON.stringify(data)}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Export potential JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { decision: { type: Type.STRING }, analysis: { type: Type.OBJECT, properties: { demand: { type: Type.STRING }, regulations: { type: Type.STRING }, risks: { type: Type.STRING }, seasonality: { type: Type.STRING } } }, recommendations: { type: Type.ARRAY, items: { type: Type.STRING } } }
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: `Export Data: ${JSON.stringify(data)}`,
+    config: {
+      systemInstruction: "Analyze international export potential. Return JSON decision and analysis breakdown.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          decision: { type: Type.STRING }, 
+          analysis: { 
+            type: Type.OBJECT, 
+            properties: { 
+              demand: { type: Type.STRING }, 
+              regulations: { type: Type.STRING }, 
+              risks: { type: Type.STRING }, 
+              seasonality: { type: Type.STRING } 
+            } 
+          }, 
+          recommendations: { type: Type.ARRAY, items: { type: Type.STRING } } 
+        }
+      }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
-export const simulateBrutalTruth = async (data: any) => {
-  const prompt = `Idea: ${JSON.stringify(data)}`;
-  return callGemini({
-    prompt,
-    systemInstruction: "Brutal failure analysis JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { brutalTruth: { type: Type.STRING }, probability: { type: Type.NUMBER }, financialLoss: { type: Type.STRING }, operationalImpact: { type: Type.STRING }, missingQuestions: { type: Type.ARRAY, items: { type: Type.STRING } }, recoveryPlan: { type: Type.ARRAY, items: { type: Type.STRING } } }
+export const simulateBrutalTruth = async (data: any): Promise<FailureSimulation> => {
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-preview",
+    contents: `Idea: ${JSON.stringify(data)}`,
+    config: {
+      systemInstruction: "Provide the brutal reality of startup failure for this specific idea. Return JSON FailureSimulation.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          brutalTruth: { type: Type.STRING }, 
+          probability: { type: Type.NUMBER }, 
+          financialLoss: { type: Type.STRING }, 
+          operationalImpact: { type: Type.STRING }, 
+          missingQuestions: { type: Type.ARRAY, items: { type: Type.STRING } }, 
+          recoveryPlan: { type: Type.ARRAY, items: { type: Type.STRING } } 
+        }
+      }
     }
   });
+  return JSON.parse(response.text || "{}");
 };
 
-export const getGovInsights = async () => {
-  return callGemini({
-    prompt: "Macro insights for gov JSON.",
-    json: true,
-    schema: {
-      type: Type.OBJECT,
-      properties: { riskyMarkets: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { name: { type: Type.STRING }, failRate: { type: Type.NUMBER } } } }, readySectors: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { name: { type: Type.STRING }, score: { type: Type.NUMBER } } } }, commonFailReasons: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { reason: { type: Type.STRING }, percentage: { type: Type.NUMBER } } } }, regulatoryGaps: { type: Type.ARRAY, items: { type: Type.STRING } } }
-    }
-  });
-};
-
-export const generateStartupIdea = async (form: { sector: string; interest: string }) => {
-  const prompt = `Sector: ${form.sector}`;
-  return callGemini({ prompt, systemInstruction: "Generate 3 innovative ideas Markdown Arabic." });
-};
-
-export const generateFounderCV = async (form: any) => {
-  const prompt = `CV: ${JSON.stringify(form)}`;
-  return callGemini({ prompt, systemInstruction: "Write professional CV Markdown Arabic." });
-};
-
-export const generateProductSpecs = async (form: { projectName: string; description: string }) => {
-  const prompt = `Specs for: ${form.projectName}`;
-  return callGemini({ prompt, systemInstruction: "Define MVP specs Markdown Arabic." });
-};
-
-export const createPathFinderChat = () => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  return ai.chats.create({
+export const getGovInsights = async (): Promise<GovStats> => {
+  const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    config: { systemInstruction: "Professional advisor. Finally return JSON block." }
+    contents: "Analyze national ecosystem trends.",
+    config: {
+      systemInstruction: "Generate macro insights for government planners. Return JSON GovStats.",
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: { 
+          riskyMarkets: { 
+            type: Type.ARRAY, 
+            items: { 
+              type: Type.OBJECT, 
+              properties: { 
+                name: { type: Type.STRING }, 
+                failRate: { type: Type.NUMBER } 
+              } 
+            } 
+          }, 
+          readySectors: { 
+            type: Type.ARRAY, 
+            items: { 
+              type: Type.OBJECT, 
+              properties: { 
+                name: { type: Type.STRING }, 
+                score: { type: Type.NUMBER } 
+              } 
+            } 
+          }, 
+          commonFailReasons: { 
+            type: Type.ARRAY, 
+            items: { 
+              type: Type.OBJECT, 
+              properties: { 
+                reason: { type: Type.STRING }, 
+                percentage: { type: Type.NUMBER } 
+              } 
+            } 
+          }, 
+          regulatoryGaps: { type: Type.ARRAY, items: { type: Type.STRING } } 
+        }
+      }
+    }
   });
+  return JSON.parse(response.text || "{}");
 };

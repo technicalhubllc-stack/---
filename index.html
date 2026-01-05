@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>بيزنس ديفلوبرز | Business Developers</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -15,9 +15,15 @@
               'deep-navy': '#020617',
               'electric-blue': '#2563eb',
               'saudi-green': '#059669',
+              'slate-dark': '#0f172a',
             },
             fontFamily: {
-              sans: ['Poppins', 'Tajawal', 'sans-serif'],
+              sans: ['Cairo', 'sans-serif'],
+            },
+            boxShadow: {
+              'premium': '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
+              'glow': '0 0 30px rgba(37, 99, 235, 0.25)',
+              'inner-glow': 'inset 0 0 20px rgba(255, 255, 255, 0.02)',
             },
           },
         },
@@ -27,13 +33,14 @@
       :root {
         --primary: #2563eb;
         --bg-deep: #020617;
-        --glass: rgba(255, 255, 255, 0.03);
+        --glass: rgba(15, 23, 42, 0.4);
         --glass-border: rgba(255, 255, 255, 0.08);
       }
 
       * {
-        font-family: 'Poppins', 'Tajawal', sans-serif !important;
+        font-family: 'Cairo', sans-serif !important;
         scroll-behavior: smooth;
+        -webkit-tap-highlight-color: transparent;
       }
 
       body {
@@ -45,25 +52,40 @@
       }
 
       .cinematic-grid {
-        background-image: radial-gradient(rgba(37, 99, 235, 0.1) 1px, transparent 1px);
-        background-size: 50px 50px;
+        background-image: radial-gradient(rgba(37, 99, 235, 0.12) 1px, transparent 1px);
+        background-size: 40px 40px;
       }
 
       .glass-card {
         background: var(--glass);
-        backdrop-filter: blur(16px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+      }
+      
+      .glass-card:hover {
+        background: rgba(30, 41, 59, 0.6);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+      }
+
+      .glass-premium {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .btn-glow {
         position: relative;
         overflow: hidden;
-        transition: all 0.4s ease;
+        transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
       }
       
       .btn-glow:hover {
-        box-shadow: 0 0 25px rgba(37, 99, 235, 0.5);
+        box-shadow: 0 0 40px rgba(37, 99, 235, 0.4);
         transform: translateY(-2px);
       }
 
@@ -74,7 +96,7 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.08), transparent);
         transform: rotate(45deg);
         transition: 0.8s;
       }
@@ -83,23 +105,44 @@
         left: 120%;
       }
 
-      .text-reveal {
-        animation: reveal 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+      .text-shimmer {
+        background: linear-gradient(to right, #fff 20%, #3b82f6 40%, #60a5fa 60%, #fff 80%);
+        background-size: 200% auto;
+        color: #000;
+        background-clip: text;
+        text-fill-color: transparent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 4s ease-in-out infinite;
+      }
+
+      @keyframes shine {
+        to { background-position: 200% center; }
       }
 
       @keyframes reveal {
-        0% { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+        0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
         100% { opacity: 1; transform: translateY(0); filter: blur(0); }
       }
 
-      ::-webkit-scrollbar { width: 4px; }
-      ::-webkit-scrollbar-track { background: var(--bg-deep); }
-      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+      .animate-reveal {
+        animation: reveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+      }
 
-      .sidebar-item-active {
-        background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%);
-        border-right: 4px solid var(--primary);
-        color: #fff;
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: var(--bg-deep); }
+      ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; border: 2px solid var(--bg-deep); }
+      ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #1e293b var(--bg-deep);
+      }
+
+      /* Hover states for cards */
+      .card-hover-active {
+        box-shadow: 0 0 30px rgba(37, 99, 235, 0.15);
+        border-color: rgba(37, 99, 235, 0.3);
       }
     </style>
     <script type="importmap">

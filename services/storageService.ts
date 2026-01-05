@@ -11,7 +11,8 @@ import {
   SupportTicket,
   TicketType,
   PartnerProfile,
-  PartnershipRequest
+  PartnershipRequest,
+  KPIRecord
 } from '../types';
 
 const KEYS = {
@@ -59,6 +60,10 @@ export const storageService = {
         status: 'PENDING',
         currentTrack: 'Idea',
         metrics: { readiness: 10, tech: 0, market: 0 },
+        kpiHistory: [
+          { date: 'أسبوع 1', growth: 10, techReadiness: 10, marketEngagement: 5 }
+        ],
+        riskLevel: 'Low',
         aiOpinion: 'بانتظار المخرجات الأولى للتقييم الذكي.',
         partners: [],
         lastActivity: new Date().toISOString()
@@ -113,6 +118,28 @@ export const storageService = {
     localStorage.setItem(KEYS.STARTUPS, JSON.stringify(updated));
   },
 
+  addKPIRecord: (projectId: string, record: KPIRecord) => {
+    const startups = storageService.getAllStartups();
+    const updated = startups.map(s => {
+      if (s.projectId === projectId) {
+        const history = s.kpiHistory || [];
+        return {
+          ...s,
+          kpiHistory: [...history, record],
+          metrics: {
+            ...s.metrics,
+            readiness: record.growth,
+            tech: record.techReadiness,
+            market: record.marketEngagement
+          },
+          lastActivity: new Date().toISOString()
+        };
+      }
+      return s;
+    });
+    localStorage.setItem(KEYS.STARTUPS, JSON.stringify(updated));
+  },
+
   getUserTasks: (uid: string): TaskRecord[] => {
     return storageService.getAllTasks().filter(t => t.uid === uid);
   },
@@ -123,7 +150,7 @@ export const storageService = {
       id: `custom_${Date.now()}_${uid}`,
       uid,
       projectId,
-      levelId: 0, // 0 implies custom/non-roadmap task
+      levelId: 0, 
       title,
       description,
       status: 'ASSIGNED'
@@ -150,8 +177,57 @@ export const storageService = {
   },
 
   getCurrentRoadmap: (uid: string): LevelData[] => {
-    const data = localStorage.getItem(`${KEYS.ROADMAP_PREFIX}${uid}`);
-    return data ? JSON.parse(data) : INITIAL_ROADMAP;
+    const rawData = localStorage.getItem(`${KEYS.ROADMAP_PREFIX}${uid}`);
+    let roadmap: LevelData[] = rawData ? JSON.parse(rawData) : INITIAL_ROADMAP;
+    
+    // Ensure 4, 5, 6 are unlocked if we are syncing with the latest program requirements
+    let roadmapNeedsUpdate = false;
+    roadmap = roadmap.map(lvl => {
+      if ([4, 5, 6].includes(lvl.id) && lvl.isLocked) {
+        roadmapNeedsUpdate = true;
+        return { ...lvl, isLocked: false };
+      }
+      return lvl;
+    });
+
+    if (roadmapNeedsUpdate) {
+      localStorage.setItem(`${KEYS.ROADMAP_PREFIX}${uid}`, JSON.stringify(roadmap));
+    }
+
+    const allTasks = storageService.getAllTasks();
+    const userTasks = allTasks.filter(t => t.uid === uid);
+    const startups = storageService.getAllStartups();
+    const userStartup = startups.find(s => s.ownerId === uid);
+    
+    let tasksAdded = false;
+    const newTasks: TaskRecord[] = [];
+
+    roadmap.forEach(level => {
+      const existingTask = userTasks.find(t => t.levelId === level.id);
+      if (!existingTask && userStartup) {
+        tasksAdded = true;
+        newTasks.push({
+          id: `t_${level.id}_${uid}`,
+          uid,
+          projectId: userStartup.projectId,
+          levelId: level.id,
+          title: `مخرج المرحلة: ${level.title}`,
+          description: level.description,
+          status: level.isLocked ? 'LOCKED' : 'ASSIGNED' 
+        });
+      } else if (existingTask && !level.isLocked && existingTask.status === 'LOCKED') {
+        tasksAdded = true;
+        existingTask.status = 'ASSIGNED';
+      }
+    });
+
+    if (tasksAdded) {
+      const otherUserTasks = allTasks.filter(t => t.uid !== uid);
+      const currentUserUpdatedTasks = [...userTasks, ...newTasks];
+      localStorage.setItem(KEYS.TASKS, JSON.stringify([...otherUserTasks, ...currentUserUpdatedTasks]));
+    }
+
+    return roadmap;
   },
 
   completeLevel: (uid: string, levelId: number) => {
@@ -167,7 +243,7 @@ export const storageService = {
     const updatedTasks = allTasks.map(t => {
       if (t.uid === uid) {
         if (t.levelId === levelId) return { ...t, status: 'APPROVED' as const };
-        if (t.levelId === levelId + 1) return { ...t, status: 'ASSIGNED' as const };
+        if (t.levelId === levelId + 1 && t.status === 'LOCKED') return { ...t, status: 'ASSIGNED' as const };
       }
       return t;
     });

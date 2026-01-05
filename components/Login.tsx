@@ -4,6 +4,7 @@ import { storageService } from '../services/storageService';
 import { UserProfile, UserRole } from '../types';
 import { playPositiveSound, playErrorSound, playCelebrationSound } from '../services/audioService';
 import { Language, getTranslation } from '../services/i18nService';
+import { Logo } from './Branding/Logo';
 
 interface LoginProps {
   onLoginSuccess: (user: UserProfile & { role: UserRole; uid: string; startupId?: string }) => void;
@@ -62,7 +63,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack, lang }) =>
     <div className="min-h-screen flex items-center justify-center bg-white p-6" dir={t.dir}>
       <div className="max-w-md w-full space-y-12 animate-fade-in">
         <div className="text-center space-y-4">
-           <div className="w-12 h-12 bg-slate-900 flex items-center justify-center text-white font-bold mx-auto">BD</div>
+           <Logo className="h-16 justify-center" />
            <h2 className="text-3xl font-extrabold text-slate-900">{t.auth.login_title}</h2>
            <p className="text-slate-400 font-medium text-sm">{t.auth.login_sub}</p>
         </div>

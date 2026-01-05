@@ -9,77 +9,95 @@ interface LandingPageProps {
   lang: Language;
 }
 
-// صورة حقيقية لجبال طويق تعبر عن القوة والامتداد
-const TUWAIQ_HERO = "https://images.unsplash.com/photo-1623151820421-9705a6111195?auto=format&fit=crop&q=80&w=2400";
+const CINEMATIC_IMAGES = [
+  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2400",
+  "https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&q=80&w=2400",
+  "https://images.unsplash.com/photo-1506477331477-33d6d8b3dc85?auto=format&fit=crop&q=80&w=2400",
+  "https://images.unsplash.com/photo-1623151820421-9705a6111195?auto=format&fit=crop&q=80&w=2400"
+];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onRoadmap, onImpact, lang }) => {
   const t = getTranslation(lang);
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % CINEMATIC_IMAGES.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="animate-fade-in relative overflow-hidden">
+    <div className="relative overflow-hidden bg-deep-navy">
       <style>{`
-        @keyframes subtle-zoom {
+        @keyframes cinematic-zoom {
           0% { transform: scale(1); }
-          100% { transform: scale(1.08); }
+          100% { transform: scale(1.1); }
         }
-        .animate-tuwaiq {
-          animation: subtle-zoom 25s ease-out forwards;
+        .bg-layer {
+          position: absolute;
+          inset: 0;
+          transition: opacity 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animate-cinematic {
+          animation: cinematic-zoom 20s ease-in-out infinite alternate;
         }
         .cinematic-overlay {
-          background: radial-gradient(circle at center, rgba(2, 6, 23, 0.7) 0%, rgba(2, 6, 23, 0.95) 100%);
+          background: linear-gradient(to bottom, rgba(2, 6, 23, 0.3) 0%, rgba(2, 6, 23, 0.95) 100%);
         }
       `}</style>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center px-6 md:px-24 overflow-hidden bg-slate-950">
+      <section className="relative min-h-screen flex items-center px-8 md:px-24 overflow-hidden">
         
-        {/* Background Layers */}
+        {/* Background Layers for Cross-fade */}
         <div className="absolute inset-0 z-0">
-          {/* Base Image with Cinematic Processing */}
-          <img 
-            src={TUWAIQ_HERO} 
-            className="w-full h-full object-cover brightness-[0.25] contrast-[1.1] grayscale-[30%] animate-tuwaiq"
-            alt="Tuwaiq Mountains - Strength and Extension"
-          />
-          
-          {/* Dark Overlay (85% Depth) */}
+          {CINEMATIC_IMAGES.map((img, idx) => (
+            <div 
+              key={idx}
+              className={`bg-layer ${idx === currentIdx ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <img 
+                src={img} 
+                className={`w-full h-full object-cover brightness-[0.3] contrast-[1.05] ${idx === currentIdx ? 'animate-cinematic' : ''}`}
+                alt={`Cinematic Background ${idx}`}
+              />
+            </div>
+          ))}
           <div className="absolute inset-0 cinematic-overlay z-10"></div>
-          
-          {/* Technical Grid Overlay */}
-          <div className="absolute inset-0 cinematic-grid opacity-20 z-15"></div>
-          
-          {/* Bottom Vignette for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-20"></div>
+          <div className="absolute inset-0 cinematic-grid opacity-25 z-15"></div>
         </div>
 
         {/* Content Area */}
         <div className="max-w-7xl mx-auto w-full relative z-30">
-          <div className="max-w-4xl space-y-14">
+          <div className="max-w-5xl space-y-12 animate-reveal">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-3 px-6 py-2.5 glass-premium rounded-full border border-white/10 shadow-2xl">
-                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                <p className="text-white font-black text-[10px] uppercase tracking-[0.4em]">Sovereign Strategic Entity</p>
+              <div className="inline-flex items-center gap-3 px-5 py-2 glass-premium rounded-full border border-white/10 shadow-glow">
+                <span className="w-1.5 h-1.5 rounded-full bg-electric-blue animate-pulse"></span>
+                <p className="text-white font-black text-[9px] uppercase tracking-[0.4em]">Sovereign Strategic Intelligence</p>
               </div>
-              <h1 className="text-5xl md:text-8xl font-black leading-[1.05] text-white tracking-tighter">
-                منهجية احتضان <br/> 
-                <span className="text-blue-500 text-shimmer">احترافية.</span>
+              <h1 className="text-6xl md:text-[8rem] font-black leading-[0.9] text-white tracking-tighter">
+                بناء الكيانات <br/> 
+                <span className="text-shimmer">بسيادة رقمية.</span>
               </h1>
             </div>
             
-            <p className="text-slate-300 text-xl md:text-3xl font-medium leading-relaxed max-w-3xl border-r-4 border-blue-600 pr-10">
-              لتحويل الأفكار الجريئة إلى <span className="text-white font-black underline underline-offset-8 decoration-blue-500/50">كيانات مستدامة</span>، عبر دمج الذكاء الاصطناعي السيادي مع الخبرة العملية العميقة.
+            <p className="text-slate-300 text-xl md:text-3xl font-medium leading-relaxed max-w-4xl border-r-[10px] border-electric-blue pr-10">
+              نهج استباقي لتحويل الرؤى إلى <span className="text-white font-black">مؤسسات سيادية</span>، <br className="hidden md:block" />
+              عبر دمج ذكاء Gemini الاستراتيجي مع دقة التنفيذ الميداني.
             </p>
             
-            <div className="flex flex-wrap gap-8 pt-6">
+            <div className="flex flex-wrap gap-6 pt-12">
               <button 
                 onClick={onStart} 
-                className="bg-blue-600 text-white px-14 py-6 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all btn-glow shadow-3xl active:scale-95"
+                className="bg-electric-blue text-white px-14 py-6 rounded-[2.5rem] font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all btn-glow shadow-premium active:scale-95 flex items-center gap-4"
               >
-                {t.hero.apply}
+                <span>{t.hero.apply}</span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
               </button>
               <button 
                 onClick={onRoadmap} 
-                className="px-12 py-6 glass-premium text-white text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/10 rounded-2xl"
+                className="px-12 py-6 glass-premium text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all border border-white/10 rounded-[2.5rem]"
               >
                 {t.hero.methodology}
               </button>
@@ -87,26 +105,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onRoadmap, on
           </div>
         </div>
 
-        {/* Floating Indicator */}
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 opacity-40 group cursor-default">
-           <div className="w-px h-20 bg-gradient-to-b from-blue-500 to-transparent mx-auto group-hover:h-24 transition-all duration-700"></div>
-           <p className="text-white text-[9px] font-black uppercase tracking-[0.5em] mt-6 rotate-180" style={{writingMode: 'vertical-rl'}}>Tuwaiq Escarpment</p>
+        {/* Cinematic Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-40 opacity-40 group cursor-default hidden md:block">
+           <div className="w-[1px] h-16 bg-gradient-to-b from-electric-blue to-transparent mx-auto group-hover:h-24 transition-all duration-1000"></div>
+           <p className="text-white text-[8px] font-black uppercase tracking-[0.5em] mt-6" style={{writingMode: 'vertical-rl'}}>Explore Potential</p>
         </div>
       </section>
 
       {/* Stats Board */}
       <section className="px-12 py-32 bg-white relative z-20">
         <div className="max-w-7xl mx-auto">
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-24">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-20">
               {[
-                { label: t.stats.startups, val: '180+' },
-                { label: t.stats.capital, val: '$42M' },
-                { label: t.stats.experts, val: '65+' },
-                { label: t.stats.countries, val: '14' }
+                { label: t.stats.startups, val: '185+', icon: '🚀' },
+                { label: t.stats.capital, val: '$42M', icon: '💰' },
+                { label: t.stats.experts, val: '65+', icon: '🧠' },
+                { label: t.stats.countries, val: '14', icon: '🌍' }
               ].map((s, i) => (
-                <div key={i} className="space-y-4 group border-r border-slate-100 pr-10">
-                   <p className="text-6xl font-black text-slate-900 tracking-tighter group-hover:text-blue-600 transition-colors">{s.val}</p>
-                   <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-tight">{s.label}</p>
+                <div key={i} className="space-y-4 group border-r-2 border-slate-50 pr-8 hover:border-electric-blue transition-all duration-500">
+                   <div className="text-3xl mb-2 grayscale group-hover:grayscale-0 transition-all duration-700 opacity-40 group-hover:opacity-100">{s.icon}</div>
+                   <p className="text-6xl font-black text-slate-900 tracking-tighter tabular-nums group-hover:text-electric-blue transition-colors">{s.val}</p>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">{s.label}</p>
                 </div>
               ))}
            </div>
