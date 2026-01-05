@@ -75,50 +75,62 @@ export interface LevelData {
 export const INITIAL_ROADMAP: LevelData[] = [
   { 
     id: 1, 
-    title: 'التحقق الاستراتيجي', 
-    description: 'تحليل جدوى المشكلة وصحة الفرضيات الأولية للسوق عبر رادار السوق الرقمي.', 
-    icon: '🛡️', 
+    title: 'استراتيجية التوسع العالمي', 
+    description: 'تحديد الأسواق الجديدة والفرص المستقبلية باستخدام بيانات السوق المتقدمة', 
+    icon: '🌐', 
     imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'slate',
+    customColor: 'indigo',
     complexity: 'Medium',
     estimatedTime: '٤ ساعات',
     pillars: [
       { title: 'تحليل الفجوات', description: 'رصد المشاكل التي تجاهلها المنافسون.', icon: '🔍' },
       { title: 'بروتوكول المقابلات', description: 'تقنية استخراج الألم من العميل المستهدف.', icon: '🎙️' }
+    ],
+    resources: [
+      { title: 'دليل التحقق من الفكرة', type: 'PDF', url: '#' },
+      { title: 'فيديو: هندسة المقابلات', type: 'VIDEO', url: '#' }
     ]
   },
   { 
     id: 2, 
     title: 'هيكلة نموذج العمل', 
     description: 'تصميم محرك الإيرادات والقيمة لضمان استدامة الكيان المؤسسي على المدى الطويل.', 
-    icon: '📐', 
+    icon: '🏗️', 
     imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'indigo',
+    customColor: 'blue',
     complexity: 'High',
     estimatedTime: '٦ ساعات',
     pillars: [
       { title: 'مصفوفة القيمة', description: 'تأصيل السبب وراء دفع العميل للمال.', icon: '⚖️' },
       { title: 'هندسة التدفقات', description: 'رسم مسار السيولة من العميل للكيان.', icon: '💧' }
+    ],
+    resources: [
+      { title: 'قالب BMC المطور', type: 'DOC', url: '#' },
+      { title: 'أمثلة لتدفقات السيولة', type: 'PDF', url: '#' }
     ]
   },
   { 
     id: 3, 
     title: 'رادار السوق التنافسي', 
     description: 'تحليل دقيق للمنافسين وتحديد الميزة التنافسية الجوهرية لضمان التفوق.', 
-    icon: '📡', 
+    icon: '🛰️', 
     imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'blue',
+    customColor: 'slate',
     complexity: 'Elite',
     estimatedTime: '٨ ساعات',
     pillars: [
       { title: 'تحليل المنافسين', description: 'تحديد نقاط الضعف في حلول المنافسين.', icon: '🎯' },
       { title: 'الميزة الاستراتيجية', description: 'صياغة الـ Unfair Advantage الخاصة بك.', icon: '🧬' }
+    ],
+    resources: [
+      { title: 'خريطة التمركز التنافسي', type: 'PDF', url: '#' },
+      { title: 'تقارير قطاعية 2024', type: 'LINK', url: '#' }
     ]
   },
   { 
@@ -129,12 +141,16 @@ export const INITIAL_ROADMAP: LevelData[] = [
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'amber',
+    customColor: 'emerald',
     complexity: 'Medium',
     estimatedTime: '٥ ساعات',
     pillars: [
       { title: 'هندسة المنتج', description: 'تحديد الخصائص الجوهرية للإطلاق.', icon: '📊' },
       { title: 'تجربة المستخدم', description: 'تصميم رحلة عميل سلسة ومنطقية.', icon: '📡' }
+    ],
+    resources: [
+      { title: 'دليل هندسة الـ MVP', type: 'PDF', url: '#' },
+      { title: 'قالب رحلة المستخدم', type: 'DOC', url: '#' }
     ]
   },
   { 
@@ -145,12 +161,16 @@ export const INITIAL_ROADMAP: LevelData[] = [
     imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600', 
     isLocked: false, 
     isCompleted: false, 
-    customColor: 'emerald',
+    customColor: 'amber',
     complexity: 'High',
     estimatedTime: '٦ ساعات',
     pillars: [
       { title: 'توقعات التدفقات', description: 'توقع الأرباح والخسائر لـ ٣ سنوات.', icon: '📊' },
       { title: 'نقطة التعادل', description: 'متى سيبدأ المشروع في تغطية تكاليفه؟', icon: '⚖️' }
+    ],
+    resources: [
+      { title: 'محاكي النمذجة المالية', type: 'LINK', url: '#' },
+      { title: 'شرح معايير التقييم', type: 'VIDEO', url: '#' }
     ]
   },
   { 
@@ -167,6 +187,10 @@ export const INITIAL_ROADMAP: LevelData[] = [
     pillars: [
       { title: 'العرض الاستثمارية', description: 'تصميم Pitch Deck احترافي ومقنع.', icon: '📽️' },
       { title: 'هيكلة الحصص', description: 'توزيع الملكية وتخطيط جولات التمويل.', icon: '📉' }
+    ],
+    resources: [
+      { title: 'قالب Sequoia الرسمي', type: 'PDF', url: '#' },
+      { title: 'فنون الـ Pitching', type: 'VIDEO', url: '#' }
     ]
   }
 ];

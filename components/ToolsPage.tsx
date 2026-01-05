@@ -11,7 +11,8 @@ import {
   generateSWOTAnalysisAI,
   generateInvestorPitchAI,
   generateGTMStrategyAI,
-  generateFinancialForecastAI
+  generateFinancialForecastAI,
+  generateAIProjectDescription
 } from '../services/geminiService';
 import { playPositiveSound, playCelebrationSound, playErrorSound } from '../services/audioService';
 
@@ -19,7 +20,7 @@ interface ToolsPageProps {
   onBack: () => void;
 }
 
-type ToolID = 'IDEA' | 'CV' | 'PRODUCT' | 'MARKET' | 'PLAN' | 'DECK' | 'FULL_PLAN' | 'SWOT' | 'INVESTOR_PITCH' | 'GTM' | 'FINANCE';
+type ToolID = 'IDEA' | 'CV' | 'PRODUCT' | 'MARKET' | 'PLAN' | 'DECK' | 'FULL_PLAN' | 'SWOT' | 'INVESTOR_PITCH' | 'GTM' | 'FINANCE' | 'DESC_GEN';
 
 interface ToolMeta {
   id: ToolID;
@@ -33,6 +34,26 @@ interface ToolMeta {
 }
 
 const TOOLS_META: ToolMeta[] = [
+  { 
+    id: 'FULL_PLAN', 
+    title: 'معماري خطة العمل الشاملة', 
+    desc: 'ولّد وثيقة استراتيجية متكاملة تشمل كافة أقسام خطة العمل المؤسسية بما في ذلك الملخص التنفيذي، تحليل السوق، والتوقعات المالية.', 
+    detailedInfo: 'محرك Gemini 3 Pro يحلل جوهر فكرتك ليصيغ الملخص التنفيذي، تحليل السوق المالي، وتوقعات النمو.',
+    expectedOutput: 'تقرير خطة عمل (Executive Summary, Market Analysis, Projections).',
+    aiLogic: 'Tier-1 Consulting Framework',
+    icon: '🏛️', 
+    color: 'blue' 
+  },
+  { 
+    id: 'DESC_GEN', 
+    title: 'مولد وصف المشروع الذكي', 
+    desc: 'حوّل ميزات مشروعك إلى وصف استراتيجي مقنع وجاذب للمستثمرين.', 
+    detailedInfo: 'صياغة نصوص ترويجية احترافية توضح القيمة المضافة ونموذج الحل المقترح.',
+    expectedOutput: 'وصف مشروع استراتيجي (Pitch Summary).',
+    aiLogic: 'Strategic Copywriting & Value Prop Analysis',
+    icon: '✍️', 
+    color: 'blue' 
+  },
   { 
     id: 'INVESTOR_PITCH', 
     title: 'مولد العروض الاستثمارية (Pitch)', 
@@ -62,16 +83,6 @@ const TOOLS_META: ToolMeta[] = [
     aiLogic: 'Structured Financial Modeling',
     icon: '📊', 
     color: 'amber' 
-  },
-  { 
-    id: 'FULL_PLAN', 
-    title: 'معماري خطة العمل الشاملة', 
-    desc: 'ولّد وثيقة استراتيجية متكاملة تشمل كافة أقسام خطة العمل المؤسسية.', 
-    detailedInfo: 'محرك Gemini 3 Pro يحلل جوهر فكرتك ليصيغ الملخص التنفيذي، تحليل السوق المالي، وتوقعات النمو.',
-    expectedOutput: 'تقرير خطة عمل (Executive Summary, Market Analysis, Projections).',
-    aiLogic: 'Tier-1 Consulting Framework',
-    icon: '🏛️', 
-    color: 'blue' 
   },
   { 
     id: 'SWOT', 
@@ -107,7 +118,7 @@ const TOOLS_META: ToolMeta[] = [
     id: 'PRODUCT', 
     title: 'مهندس المنتج (MVP)', 
     desc: 'حدد المزايا الجوهرية وصمم رحلة المستخدم التقنية.', 
-    detailedInfo: 'تحليل المتطلبات التقنية وترتيب أولويات الميزات لبناء منتج أولي.',
+    detailedInfo: 'تحليل المتمتطلبات التقنية وترتيب أولويات الميزات لبناء منتج أولي.',
     expectedOutput: 'قائمة ميزات MVP + مخطط تدفق المستخدم.',
     aiLogic: 'Agile Product Management',
     icon: '⚙️', 
@@ -132,7 +143,8 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
     SWOT: { name: '', description: '' },
     INVESTOR_PITCH: { name: '', description: '', targetMarket: '', amount: '' },
     GTM: { name: '', industry: '', target: '', pricing: '' },
-    FINANCE: { name: '', revenueModel: '', initialCap: '', burnRate: '' }
+    FINANCE: { name: '', revenueModel: '', initialCap: '', burnRate: '' },
+    DESC_GEN: { projectName: '', features: '' }
   });
 
   const handleGenerate = async () => {
@@ -155,6 +167,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
       else if (activeTool === 'INVESTOR_PITCH') res = await generateInvestorPitchAI(currentForm);
       else if (activeTool === 'GTM') res = await generateGTMStrategyAI(currentForm);
       else if (activeTool === 'FINANCE') res = await generateFinancialForecastAI(currentForm);
+      else if (activeTool === 'DESC_GEN') res = await generateAIProjectDescription(currentForm);
       
       setResult(res);
       playCelebrationSound();
@@ -242,6 +255,19 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                 </div>
 
                 <div className="space-y-8">
+                   {activeTool === 'DESC_GEN' && (
+                     <div className="space-y-6">
+                        <div>
+                           <label className={labelClass}>اسم المشروع</label>
+                           <input className={inputClass} value={forms.DESC_GEN.projectName} onChange={e => setForms({...forms, DESC_GEN: {...forms.DESC_GEN, projectName: e.target.value}})} placeholder="اسم شركتك" />
+                        </div>
+                        <div>
+                           <label className={labelClass}>أهم الميزات والخصائص</label>
+                           <textarea className={inputClass + " h-32 resize-none"} value={forms.DESC_GEN.features} onChange={e => setForms({...forms, DESC_GEN: {...forms.DESC_GEN, features: e.target.value}})} placeholder="مثال: تطبيق موبايل، يعتمد على AI، يخدم أصحاب المطاعم..." />
+                        </div>
+                     </div>
+                   )}
+
                    {activeTool === 'GTM' && (
                      <div className="space-y-6">
                         <div>
@@ -390,6 +416,40 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                   </div>
                 )}
 
+                {result && activeTool === 'FULL_PLAN' && (
+                  <div className="animate-fade-up space-y-10 pb-10 relative z-10 flex-1 flex flex-col">
+                    <div className="flex justify-between items-center pb-8 border-b border-white/5">
+                      <div>
+                        <h4 className="text-2xl font-black text-blue-400">خطة العمل المؤسسية</h4>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Full Business Plan Generation</p>
+                      </div>
+                      <div className="flex gap-4">
+                         <button 
+                          onClick={() => { navigator.clipboard.writeText(JSON.stringify(result, null, 2)); alert('تم النسخ!'); }} 
+                          className="text-[10px] font-black uppercase tracking-widest px-8 py-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/10"
+                        >
+                          نسخ الخطة كاملة
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Result Tabs for Full Plan */}
+                    <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 w-fit">
+                       <button onClick={() => setActiveResultTab('summary')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${activeResultTab === 'summary' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>الملخص التنفيذي</button>
+                       <button onClick={() => setActiveResultTab('market')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${activeResultTab === 'market' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>تحليل السوق</button>
+                       <button onClick={() => setActiveResultTab('financials')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${activeResultTab === 'financials' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>التوقعات المالية</button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 pt-4">
+                        <div className="text-lg leading-relaxed whitespace-pre-wrap font-medium text-slate-200">
+                           {activeResultTab === 'summary' && (result.executiveSummary || "لا يتوفر ملخص.")}
+                           {activeResultTab === 'market' && (result.marketAnalysis || "لا يتوفر تحليل سوق.")}
+                           {activeResultTab === 'financials' && (result.financialProjections || "لا تتوفر توقعات مالية.")}
+                        </div>
+                    </div>
+                  </div>
+                )}
+
                 {result && activeTool === 'FINANCE' && (
                   <div className="animate-fade-up space-y-10 pb-10 relative z-10 flex-1 flex flex-col">
                     <div className="pb-8 border-b border-white/5">
@@ -427,7 +487,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                   </div>
                 )}
 
-                {result && activeTool !== 'FINANCE' && (
+                {result && activeTool !== 'FINANCE' && activeTool !== 'FULL_PLAN' && (
                   <div className="animate-fade-up space-y-10 pb-10 relative z-10 flex-1 flex flex-col">
                      <div className="flex justify-between items-center pb-8 border-b border-white/5">
                         <div>
@@ -443,7 +503,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ onBack }) => {
                      </div>
                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 pt-6">
                         <div className="text-lg leading-relaxed whitespace-pre-wrap font-medium text-slate-200">
-                           {typeof result === 'string' ? result : (activeTool === 'FULL_PLAN' ? result.executiveSummary : JSON.stringify(result, null, 2))}
+                           {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
                         </div>
                      </div>
                   </div>

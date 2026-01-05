@@ -42,6 +42,37 @@ const callGemini = async (params: { prompt: string; systemInstruction?: string; 
 };
 
 /**
+ * Custom AI Mentor Response with Persona and Style
+ */
+export const getCustomMentorResponseAI = async (message: string, persona: string, style: string) => {
+  const systemInstruction = `
+    أنت موجه ذكي في مسرعة أعمال 'بيزنس ديفلوبرز'.
+    شخصيتك المختارة: ${persona}
+    أسلوب الرد المختار: ${style}
+    يجب أن تلتزم تماماً بالشخصية والأسلوب المحددين في كافة ردودك.
+    تحدث باللغة العربية دائماً وباحترافية عالية.
+  `;
+  return callGemini({
+    prompt: message,
+    systemInstruction
+  });
+};
+
+/**
+ * Project Description Generator
+ */
+export const generateAIProjectDescription = async (data: { projectName: string; features: string }) => {
+  const prompt = `Project Name: ${data.projectName}\nKey Features: ${data.features}`;
+  return callGemini({
+    model: "gemini-3-flash-preview",
+    prompt,
+    systemInstruction: `You are an elite Business Copywriter and Strategist. Generate a high-impact, professional project description in Arabic. 
+    The description should clearly state the Value Proposition, Problem solved, and the overall vision. 
+    The tone should be institutional, persuasive, and suitable for a Pitch Deck or a Business Plan.`
+  });
+};
+
+/**
  * Go-to-Market (GTM) Strategy Generator
  */
 export const generateGTMStrategyAI = async (data: { name: string; industry: string; target: string; pricing: string }) => {

@@ -17,6 +17,7 @@ const REG_IMAGES = [
 
 export const Registration: React.FC<RegistrationProps> = ({ role = 'STARTUP', onRegister }) => {
   const [step, setStep] = useState(1);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [formData, setFormData] = useState<UserProfile>({
     firstName: '', lastName: '', email: '', phone: '', city: '', 
     agreedToTerms: false, startupName: '', startupDescription: '', industry: 'Technology',
@@ -26,6 +27,40 @@ export const Registration: React.FC<RegistrationProps> = ({ role = 'STARTUP', on
   const handleNext = () => { 
     if (step < 3) { setStep(s => s + 1); playPositiveSound(); window.scrollTo({ top: 0, behavior: 'smooth' }); } 
     else { playCelebrationSound(); onRegister(formData); }
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      alert("خاصية تحديد الموقع غير مدعومة في متصفحك.");
+      return;
+    }
+
+    setIsDetectingLocation(true);
+    playPositiveSound();
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Use OpenStreetMap Nominatim for free reverse geocoding
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=ar`);
+          const data = await response.json();
+          const city = data.address.city || data.address.town || data.address.state || "موقع مكتشف";
+          
+          setFormData(prev => ({ ...prev, city }));
+          playPositiveSound();
+        } catch (error) {
+          console.error("Location detection failed", error);
+          alert("حدث خطأ أثناء محاولة تحديد الموقع برمجياً.");
+        } finally {
+          setIsDetectingLocation(false);
+        }
+      },
+      (error) => {
+        setIsDetectingLocation(false);
+        alert("تعذر الوصول للموقع الجغرافي. يرجى التأكد من تفعيل أذونات الموقع في المتصفح.");
+      }
+    );
   };
 
   const inputClass = "w-full p-6 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-electric-blue focus:bg-white focus:ring-4 focus:ring-electric-blue/5 transition-all font-bold text-sm text-slate-900 placeholder-slate-400 shadow-inner";
@@ -71,7 +106,7 @@ export const Registration: React.FC<RegistrationProps> = ({ role = 'STARTUP', on
         <div className="max-w-xl w-full space-y-16 animate-reveal">
            <header className="space-y-4">
               <div className="inline-flex items-center gap-2 bg-electric-blue/5 text-electric-blue px-5 py-2 rounded-full border border-electric-blue/10">
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">Step 0{step} • Onboarding</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">الخطوة 0{step} • الانضمام</span>
               </div>
               <h3 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
                 {step === 1 && "بيانات المؤسس التنفيذي"}
@@ -87,6 +122,38 @@ export const Registration: React.FC<RegistrationProps> = ({ role = 'STARTUP', on
                   <div className="space-y-2"><label className={labelClass}>اللقب / العائلة</label><input className={inputClass} value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} placeholder="العائلة" /></div>
                   <div className="md:col-span-2 space-y-2"><label className={labelClass}>البريد الإلكتروني الرسمي</label><input className={inputClass} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} type="email" placeholder="name@corporate.ai" /></div>
                   <div className="md:col-span-2 space-y-2"><label className={labelClass}>رقم التواصل الموثق</label><input className={inputClass} value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="05xxxxxxxx" /></div>
+                  
+                  {/* City Field with Geolocation UI */}
+                  <div className="md:col-span-2 space-y-2 relative">
+                    <label className={labelClass}>المدينة / الموقع الجغرافي</label>
+                    <div className="relative group/city">
+                      <input 
+                        className={`${inputClass} pr-16`} 
+                        value={formData.city} 
+                        onChange={e => setFormData({...formData, city: e.target.value})} 
+                        placeholder="أدخل مدينتك (مثال: الرياض)" 
+                      />
+                      <button 
+                        type="button"
+                        onClick={detectLocation}
+                        disabled={isDetectingLocation}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm group-hover/city:border-electric-blue active:scale-90 disabled:opacity-50"
+                        title="تحديد الموقع تلقائياً"
+                      >
+                        {isDetectingLocation ? (
+                          <div className="w-5 h-5 border-2 border-electric-blue/30 border-t-electric-blue rounded-full animate-spin"></div>
+                        ) : (
+                          <svg className="w-5 h-5 text-electric-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    {isDetectingLocation && (
+                      <p className="text-[9px] font-bold text-electric-blue animate-pulse mt-2 mr-2">جاري تحديد الإحداثيات الجغرافية...</p>
+                    )}
+                  </div>
                 </div>
               )}
 
